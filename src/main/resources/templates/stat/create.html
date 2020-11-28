@@ -6,11 +6,11 @@
   <title>Statistics : Add</title>
 </head>
 <body>
-<h1 layout:fragment="header">Statistics : Add</h1>
+<h1 layout:fragment="header" class="add">ЗАПИСАТЬ ДАННЫЕ</h1>
 <div layout:fragment="content"
      class="container">
-  <form id="statisticsForm"
-        th:action="@{/form}"
+  <form id="statisticsCreate"
+        th:action="@{/create}"
         th:object="${statistics}"
         action="#"
         method="post">
@@ -20,11 +20,6 @@
          th:text="${error}">
         Validation error
       </p>
-    </div>
-    <div class="pull-right">
-      <a th:href="@{/}" href="stat.html">
-        Students
-      </a>
     </div>
 
     <label for="date">Date</label>
@@ -42,7 +37,7 @@
            th:field="*{delta}"
            th:class="${#fields.hasErrors('delta')} ? 'field-error'"/>
     <div class="form-actions">
-      <input type="submit" value="Add"/>
+      <input type="submit" value="СОХРАНИТЬ"/>
     </div>
   </form>
 </div>
