@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+<head>
+  <title>Statistics : Add</title>
+</head>
+<body>
+<h1 layout:fragment="header">Statistics : Add</h1>
+<div layout:fragment="content"
+     class="container">
+  <form id="statisticsForm"
+        th:action="@{/form}"
+        th:object="${statistics}"
+        action="#"
+        method="post">
+    <div th:if="${#fields.hasErrors('*')}"
+         class="alert alert-error">
+      <p th:each="error : ${#fields.errors('*')}"
+         th:text="${error}">
+        Validation error
+      </p>
+    </div>
+    <div class="pull-right">
+      <a th:href="@{/}" href="stat.html">
+        Students
+      </a>
+    </div>
+
+    <label for="date">Date</label>
+    <input id = "date" type="text"
+           th:field="*{date}"
+           th:class="${#fields.hasErrors('date')} ? 'field-error'"/>
+
+    <label for="weight">Weight</label>
+    <input id = "weight" type="text"
+           th:field="*{weight}"
+           th:class="${#fields.hasErrors('weight')} ? 'field-error'"/>
+
+    <label for="delta">Delta</label>
+    <input id = "delta" type="text"
+           th:field="*{delta}"
+           th:class="${#fields.hasErrors('delta')} ? 'field-error'"/>
+    <div class="form-actions">
+      <input type="submit" value="Add"/>
+    </div>
+  </form>
+</div>
+</body>
+</html>

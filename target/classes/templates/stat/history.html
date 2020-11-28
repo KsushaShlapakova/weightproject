@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+  layout:decorator="layout">
+  <head>
+    <title>Statistics : View all</title>
+  </head>
+  <body>
+    <h1 layout:fragment="header">Statistics : View all</h1>
+    <div layout:fragment="content" class="container">
+      <div class="pull-right">
+        <a href="form.html" th:href="@{/(form)}">Add Statistics</a>
+       </div>
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <td>Date</td>
+            <td>Weight</td>
+            <td>Delta</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:if="${statistics.empty}">
+            <td colspan="3">
+              No data
+            </td>
+          </tr>
+          <tr th:each="statistic : ${statistics}">
+            <td th:text="${statistic.id}">1</td>
+            <td th:text="${statistic.weight}">
+              Weight
+            </td>
+            <td th:text="${statistic.delta}">
+              Delta
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
