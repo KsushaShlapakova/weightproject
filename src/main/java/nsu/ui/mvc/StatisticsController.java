@@ -43,7 +43,12 @@ public class StatisticsController {
 		this.statisticsRepository = statisticsRepository;
 	}
 
-	@RequestMapping
+	@RequestMapping("/")
+	public ModelAndView red() throws SQLException {
+		return new ModelAndView("redirect:/history");
+	}
+
+	@RequestMapping("/history")
 	public ModelAndView history() throws SQLException {
 		Iterable<Statistics> statistics = this.statisticsRepository.findAll().values();
 		return new ModelAndView("stat/history", "statistics", statistics);
@@ -54,22 +59,22 @@ public class StatisticsController {
 		return new ModelAndView("stat/view", "statistics", statistics);
 	}
 
-	@RequestMapping(params = "form", method = RequestMethod.GET)
+	@RequestMapping(params = "create", method = RequestMethod.GET)
 	public String createForm(@ModelAttribute Statistics statistics) {
-		return "stat/form";
+		return "stat/create";
 	}
 
-	@RequestMapping(value = "/form", method = RequestMethod.POST)
+	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public ModelAndView create(@Valid Statistics statistics, BindingResult result,
                                RedirectAttributes redirect) throws SQLException {
 		System.out.println(statistics.getId());
 		if (result.hasErrors()) {
-			return new ModelAndView("stat/form", "formErrors", result.getAllErrors());
+			return new ModelAndView("stat/create", "createErrors", result.getAllErrors());
 		}
 		statistics = this.statisticsRepository.save(statistics);
 		//redirect.addFlashAttribute("globalStatistics", "Successfully added");
 		System.out.println(statistics.getId());
-		return new ModelAndView("redirect:/");
+		return new ModelAndView("redirect:/history");
 	}
 
 	@RequestMapping("foo")

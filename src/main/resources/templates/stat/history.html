@@ -6,27 +6,22 @@
     <title>Statistics : View all</title>
   </head>
   <body>
-    <h1 layout:fragment="header">Statistics : View all</h1>
+    <h1 layout:fragment="header" class="history">ИСТОРИЯ</h1>
     <div layout:fragment="content" class="container">
-      <div class="pull-right">
-        <a href="form.html" th:href="@{/(form)}">Add Statistics</a>
-       </div>
-      <table class="table table-bordered table-striped">
+      <text th:if="${statistics.empty}" id="no-data">
+        Данных пока нет в системе
+      </text>
+      <table th:if="${!statistics.empty}" class="table table-bordered table-striped">
         <thead>
           <tr>
-            <td>Date</td>
-            <td>Weight</td>
-            <td>Delta</td>
+            <td width="60%">Дата</td>
+            <td width="20%">Вес</td>
+            <td width="20%">Дельта</td>
           </tr>
         </thead>
         <tbody>
-          <tr th:if="${statistics.empty}">
-            <td colspan="3">
-              No data
-            </td>
-          </tr>
           <tr th:each="statistic : ${statistics}">
-            <td th:text="${statistic.id}">1</td>
+            <td th:text="${statistic.date}">1</td>
             <td th:text="${statistic.weight}">
               Weight
             </td>
