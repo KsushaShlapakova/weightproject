@@ -3,12 +3,12 @@
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorator="layout">
 <head>
-  <title>Statistics : Add</title>
+  <title>CREATE</title>
 </head>
 <body>
-<h1 layout:fragment="header" class="add">ЗАПИСАТЬ ДАННЫЕ</h1>
 <div layout:fragment="content"
      class="container">
+  <h1 layout:fragment="header">ЗАПИСАТЬ ДАННЫЕ</h1>
   <form id="statisticsCreate"
         th:action="@{/create}"
         th:object="${statistics}"
