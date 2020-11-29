@@ -3,11 +3,11 @@
   xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
   layout:decorator="layout">
   <head>
-    <title>Statistics : View all</title>
+    <title>HISTORY</title>
   </head>
   <body>
-    <h1 layout:fragment="header" class="history">ИСТОРИЯ</h1>
     <div layout:fragment="content" class="container">
+      <h1 layout:fragment="header">ИСТОРИЯ</h1>
       <text th:if="${statistics.empty}" id="no-data">
         Данных пока нет в системе
       </text>
