@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+  layout:decorator="layout">
+  <head>
+    <title>HISTORY</title>
+  </head>
+  <body>
+    <div layout:fragment="content" class="container">
+      <h1 layout:fragment="header">ИСТОРИЯ</h1>
+      <text th:if="${statistics.empty}" id="no-data">
+        Данных пока нет в системе
+      </text>
+      <table th:if="${!statistics.empty}" class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <td width="60%">Дата</td>
+            <td width="20%">Вес</td>
+            <td width="20%">Дельта</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="statistic : ${statistics}">
+            <td th:text="${statistic.date}">1</td>
+            <td th:text="${statistic.weight}">
+              Weight
+            </td>
+            <td th:text="${statistic.delta}">
+              Delta
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

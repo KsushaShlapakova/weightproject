@@ -1,0 +1,80 @@
+.container {
+    font-family: Tahoma;
+    position: relative;
+    top: 40%;
+    left: 12%;
+    text-align: center;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    background-size: cover;
+}
+
+table {
+    margin: auto;
+    max-width: 70%;
+    font-family: Tahoma;
+    background-color: transparent;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+input {
+    position: relative;
+    display: inline-block;
+    font-size: 90%;
+    font-weight: 700;
+    text-decoration: none;
+    padding: .5em 1em;
+    outline: none;
+    background: #98d6adfb;
+    transition: .2s ease-in-out;
+}
+
+input:hover:not(:active) {
+  background: #bee8dc;
+}
+
+.add {
+    font-family: Tahoma;
+    position: absolute;
+    top: 10%;
+    left: 50%;
+}
+
+.menu-wrapper {
+    height: 100%;
+     width: 25%;
+     position: absolute;
+     top: 0;
+     left: 0;
+     overflow: auto;
+     background: #84c286fe;
+}
+.menu {
+    list-style-type: none;
+    margin: 12%;
+}
+.menu li {
+    float: none;
+    margin: 8%;
+}
+.menu li a {
+    display: block;
+    padding: 8px 15px;
+    font-family: Tahoma;
+    font-size: 14px;
+    color: black;
+    text-decoration: none;
+    text-align: left;
+    text-transform: uppercase;
+}
+.menu li a:hover {
+    text-decoration: underline;
+    transition: all 0.3s ease;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+}

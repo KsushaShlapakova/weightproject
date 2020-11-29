@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+<head>
+  <title>CREATE</title>
+</head>
+<body>
+<div layout:fragment="content"
+     class="container">
+  <h1 layout:fragment="header">ЗАПИСАТЬ ДАННЫЕ</h1>
+  <form id="statisticsCreate"
+        th:action="@{/create}"
+        th:object="${statistics}"
+        action="#"
+        method="post">
+    <div th:if="${#fields.hasErrors('*')}"
+         class="alert alert-error">
+      <p th:each="error : ${#fields.errors('*')}"
+         th:text="${error}">
+        Validation error
+      </p>
+    </div>
+
+    <label for="date">Date</label>
+    <input id = "date" type="text"
+           th:field="*{date}"
+           th:class="${#fields.hasErrors('date')} ? 'field-error'"/>
+
+    <label for="weight">Weight</label>
+    <input id = "weight" type="text"
+           th:field="*{weight}"
+           th:class="${#fields.hasErrors('weight')} ? 'field-error'"/>
+
+    <label for="delta">Delta</label>
+    <input id = "delta" type="text"
+           th:field="*{delta}"
+           th:class="${#fields.hasErrors('delta')} ? 'field-error'"/>
+    <div class="form-actions">
+      <input type="submit" value="СОХРАНИТЬ"/>
+    </div>
+  </form>
+</div>
+</body>
+</html>
