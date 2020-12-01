@@ -31,7 +31,7 @@ public class BDRespository implements StatisticsRepository {
 
 	public static final String url = "jdbc:mysql://localhost:3306/weightdetector?useSSL=false";
 	public static final String user = "root";
-	public static final String pwd = "";
+	public static final String pwd = "root1965";
 
 	public void startConnection(){
 		try {
@@ -113,14 +113,30 @@ public class BDRespository implements StatisticsRepository {
 		Long id = null;
 		try {
 			startConnection();
+			String respond = null;
 
-			String queryStudent = "insert into statistics (date, weight)" +
-					" values ('" + stat.getDate() + "', '" + stat.getWeight() + "');";
+			ResultSet rs = st.executeQuery("select id, date from statistics where date = '" + stat.getDate() + "';");
 
-			st.executeUpdate(queryStudent);
-			ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "';");
-			while (potentialId.next()) {
-				id = potentialId.getLong(1);
+			while (rs.next()) {
+				respond = rs.getString("date");
+				id = rs.getLong("id");
+			}
+
+			if (respond == null) {
+
+				String queryStudent = "insert into statistics (date, weight)" +
+						" values ('" + stat.getDate() + "', '" + stat.getWeight() + "');";
+
+				st.executeUpdate(queryStudent);
+				ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "';");
+				while (potentialId.next()) {
+					id = potentialId.getLong(1);
+				}
+			} else {
+
+				String queryStudent = "update statistics set weight ='" + stat.getWeight() + "' where date = '" + stat.getDate() + "';";
+				st.executeUpdate(queryStudent);
+
 			}
 
 		}finally {
