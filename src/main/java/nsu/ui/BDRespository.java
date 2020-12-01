@@ -17,10 +17,9 @@
 package nsu.ui;
 
 import java.sql.*;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Date;
 
 /**
  * @author Dave Syer
@@ -30,7 +29,7 @@ public class BDRespository implements StatisticsRepository {
 	private static Connection con = null;
 	private static Statement st = null;
 
-	public static final String url = "jdbc:mysql://localhost:3306/weightdetector?useUnicode=true&characterEncoding=utf8";
+	public static final String url = "jdbc:mysql://localhost:3306/weightdetector?useSSL=false";
 	public static final String user = "root";
 	public static final String pwd = "";
 
@@ -50,9 +49,14 @@ public class BDRespository implements StatisticsRepository {
 	}
 
 	@Override
-	public ConcurrentMap<Long, Statistics> findAll() throws SQLException {
-		ConcurrentMap<Long, Statistics> stat = new ConcurrentHashMap<Long, Statistics>();
-		try {
+	public ArrayList<Statistics> findAll() throws SQLException {
+		ArrayList<Statistics> stat = new ArrayList<Statistics>();
+		// все, что закомменчено - альтернативное решение, если вдруг понадобится
+//		ArrayList<Date> dateSorted = new ArrayList<Date>();
+//		ArrayList<Statistics> sortedStat = new ArrayList<Statistics>();
+//		Double delta = null;
+
+		try{
 			startConnection();
 			ResultSet rs = st.executeQuery("select * from statistics;");
 
@@ -61,15 +65,48 @@ public class BDRespository implements StatisticsRepository {
 				statistics.setId(rs.getLong(1));
 				statistics.setWeight(rs.getString(3));
 				statistics.setDate(rs.getString(2));
-				statistics.setDelta(rs.getString(4));
 
-				stat.putIfAbsent(rs.getLong(1), statistics);
+				stat.add(statistics);
 			}
-		}finally {
+
+//			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//
+//			for (Statistics statistics : stat) {
+//				dateSorted.add(dateFormat.parse(statistics.getDate()));
+//			}
+//
+//			Collections.sort(dateSorted);
+//
+//			for (Date date: dateSorted) {
+//				for (Statistics statistics: stat) {
+//					if (dateFormat.parse(statistics.getDate()).equals(date)) {
+//						sortedStat.add(statistics);
+//					}
+//				}
+//			}
+//
+//			for (int i=0; i<sortedStat.size(); i++) {
+//				if (i==0) {
+//					sortedStat.get(0).setDelta("0,0 кг");
+//				}
+//				else {
+//					delta = Double.parseDouble(sortedStat.get(i).getWeight())-Double.parseDouble(sortedStat.get(i-1).getWeight());
+//					sortedStat.get(i).setDelta(String.format("%.1f", delta) + " кг");
+//				}
+//			}
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
 			closeAll();
 		}
+
+//		return sortedStat;
+		// возвращает неотсортированный список по дате, у всех дельта = null
 		return stat;
 	}
+
 
 	@Override
 	public Statistics save(Statistics stat) throws SQLException {
@@ -77,14 +114,13 @@ public class BDRespository implements StatisticsRepository {
 		try {
 			startConnection();
 
-			String queryStudent = "insert into statistics (date, weight, delta)" +
-					" values ('" + stat.getDate() + "', '" + stat.getWeight() + "', '" +
-					stat.getDelta() + "');";
+			String queryStudent = "insert into statistics (date, weight)" +
+					" values ('" + stat.getDate() + "', '" + stat.getWeight() + "');";
 
 			st.executeUpdate(queryStudent);
-			ResultSet potencial_id = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "';");
-			while (potencial_id.next()) {
-				id = potencial_id.getLong(1);
+			ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "';");
+			while (potentialId.next()) {
+				id = potentialId.getLong(1);
 			}
 
 		}finally {

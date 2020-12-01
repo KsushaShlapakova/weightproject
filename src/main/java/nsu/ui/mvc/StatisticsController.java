@@ -50,7 +50,7 @@ public class StatisticsController {
 
 	@RequestMapping("/history")
 	public ModelAndView history() throws SQLException {
-		Iterable<Statistics> statistics = this.statisticsRepository.findAll().values();
+		Iterable<Statistics> statistics = this.statisticsRepository.findAll();
 		return new ModelAndView("stat/history", "statistics", statistics);
 	}
 

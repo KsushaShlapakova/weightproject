@@ -23,7 +23,7 @@
     </div>
 
     <label for="date">Date</label>
-    <input id = "date" type="text"
+    <input id = "date" type="date" name="calendar" max="2020-12-03"
            th:field="*{date}"
            th:class="${#fields.hasErrors('date')} ? 'field-error'"/>
 
@@ -32,10 +32,6 @@
            th:field="*{weight}"
            th:class="${#fields.hasErrors('weight')} ? 'field-error'"/>
 
-    <label for="delta">Delta</label>
-    <input id = "delta" type="text"
-           th:field="*{delta}"
-           th:class="${#fields.hasErrors('delta')} ? 'field-error'"/>
     <div class="form-actions">
       <input type="submit" value="СОХРАНИТЬ"/>
     </div>

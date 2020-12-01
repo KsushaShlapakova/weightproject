@@ -26,11 +26,10 @@ public class Statistics {
 
 	private Long id;
 
-	@Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Pattern: yyyy-dd-MM")
+	@Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Pattern: yyyy-MM-dd")
 	@NotEmpty(message = "Date is required.")
 	private String date;
 
-	@NotEmpty(message = "Delta is required.")
 	private String delta;
 
 	@Pattern(regexp = "^[1-9]\\d?\\d?$", message = "You entered a negative number.")
