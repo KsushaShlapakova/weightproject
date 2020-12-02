@@ -20,10 +20,6 @@ h1 {
     *zoom: 1;
 }
 
-.weight {
-    width = 150px;
-}
-
 body {
     margin: 0;
     height: 100%;
@@ -49,7 +45,6 @@ input {
     outline: none;
     background: #98d6adfb;
     transition: .2s ease-in-out;
-    horizontal-align: middle;
 }
 
 input:hover:not(:active) {
@@ -64,12 +59,16 @@ label {
     position: relative;
     margin: 4%;
     top: 10%;
-    left: 31%;
+    left: 29%;
 }
 
 #weight {
-    width: 130px;
+    width: 140px;
+}
 
+#date {
+    width: 210px;
+    margin: 13px;
 }
 
 .add {
@@ -87,14 +86,17 @@ label {
      left: 0;
      overflow: auto;
      background: #84c286fe;
+     border: 2px solid #474747;
 }
 .menu {
     list-style-type: none;
     margin: 12%;
+    line-height: 20px;
 }
 .menu li {
     float: none;
     margin: 8%;
+    width: auto;
 }
 .menu li a {
     display: block;
@@ -106,8 +108,9 @@ label {
     text-align: left;
     text-transform: uppercase;
 }
+
 .menu li a:hover {
-    text-decoration: underline;
+    border-bottom: 2px black solid;
     transition: all 0.3s ease;
     -webkit-transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;

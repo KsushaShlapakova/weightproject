@@ -8,6 +8,8 @@
         th:href="@{/css/bootstrap.min.css}"
         href="../../static/css/bootstrap.min.css"/>
   <link rel="stylesheet" href = "css/style.css"/>
+  <link rel="stylesheet" href="css/calendar.css" />
+  <script src="js/calendar.js"></script>
 </head>
 <body>
 <div layout:fragment="content"
@@ -27,8 +29,8 @@
     </div>
     <div class = "inputs" style="display: table">
       <div style="display: table-row">
-        <label for="date">Дата: </label>
-        <input id = "date" type="date" name="calendar"
+        <label for="date">ДАТА:  </label>
+        <input id = "date" type="date" name="calendar" class="input-data"
                th:field="*{date}"
                th:class="${#fields.hasErrors('date')} ? 'field-error'"/>
       </div>
@@ -42,8 +44,9 @@
       </div>
 
     </div>
+
     <script>
-  document.getElementById('date').max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+       document.getElementById('date').max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
     </script>
 
     <div class="form-actions" id="f">
