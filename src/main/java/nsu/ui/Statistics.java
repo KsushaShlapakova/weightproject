@@ -26,7 +26,6 @@ public class Statistics {
 
 	private Long id;
 
-	@Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "Pattern: yyyy-MM-dd")
 	@NotEmpty(message = "Date is required.")
 	private String date;
 
