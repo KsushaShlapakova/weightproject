@@ -16,23 +16,23 @@
 
 package nsu.ui;
 
-import java.sql.*;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * @author Dave Syer
- */
-public class BDRespository implements StatisticsRepository {
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
+
+
+public class BDRepository implements StatisticsRepository {
 
 	private static Connection con = null;
 	private static Statement st = null;
 
 	public static final String url = "jdbc:mysql://localhost:3306/weightdetector?useUnicode=true&characterEncoding=utf8";
 	public static final String user = "root";
-	public static final String pwd = "";
+	public static final String pwd = "password";
 
 	public void startConnection(){
 		try {
@@ -50,20 +50,28 @@ public class BDRespository implements StatisticsRepository {
 	}
 
 	@Override
-	public ConcurrentMap<Long, Statistics> findAll() throws SQLException {
-		ConcurrentMap<Long, Statistics> stat = new ConcurrentHashMap<Long, Statistics>();
+	public List<Statistics> findAll() throws SQLException {
+		List<Statistics> stat;
 		try {
 			startConnection();
 			ResultSet rs = st.executeQuery("select * from statistics;");
-
+			TreeMap<LocalDate, Statistics> sorted = new TreeMap<>();
+			DateTimeFormatter formatter
+					= DateTimeFormatter.ofPattern("yyyy-dd-MM");
 			while (rs.next()) {
 				Statistics statistics = new Statistics();
 				statistics.setId(rs.getLong(1));
-				statistics.setWeight(rs.getString(3));
+				statistics.setWeight(Float.toString(rs.getFloat(3)));
 				statistics.setDate(rs.getString(2));
-				statistics.setDelta(rs.getString(4));
-
-				stat.putIfAbsent(rs.getLong(1), statistics);
+				sorted.put(LocalDate.parse(statistics.getDate(), formatter), statistics);
+			}
+			stat = new ArrayList<>(sorted.values());
+			stat.get(0).setDelta("0.0");
+			for(int i = 1; i < stat.size(); i++){
+				Statistics temp = stat.get(i);
+				float delta = Float.parseFloat(temp.getWeight()) - Float.parseFloat(stat.get(i-1).getWeight());
+				String stringDelta =  (delta > 0) ? "+" + delta : Float.toString(delta);
+				temp.setDelta(stringDelta);
 			}
 		}finally {
 			closeAll();

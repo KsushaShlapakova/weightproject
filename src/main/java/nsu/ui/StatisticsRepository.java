@@ -14,6 +14,7 @@
 package nsu.ui;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -21,7 +22,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public interface StatisticsRepository {
 
-	ConcurrentMap<Long, Statistics> findAll() throws SQLException;
+	List<Statistics> findAll() throws SQLException;
 
 	Statistics save(Statistics message) throws SQLException;
 
