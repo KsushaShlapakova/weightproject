@@ -4,6 +4,10 @@
   layout:decorator="layout">
   <head>
     <title>HISTORY</title>
+    <link rel="stylesheet"
+          th:href="@{/css/bootstrap.min.css}"
+          href="../../static/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href = "css/style.css"/>
   </head>
   <body>
     <div layout:fragment="content" class="container">
@@ -22,10 +26,11 @@
         <tbody>
           <tr th:each="statistic : ${statistics}">
             <td th:text="${statistic.date}">1</td>
-            <td th:text="${statistic.weight}">
+            <td th:text="${statistic.weight}+ ' кг'">
               Weight
             </td>
-            <td th:text="${statistic.delta}">
+            <td th:classappend="${(statistic.delta[0] == '+' ? 'positive' : '') + (statistic.delta[0] == '-' ? 'negative' : '')}"
+                th:text="${statistic.delta + ' кг'}">
               Delta
             </td>
           </tr>

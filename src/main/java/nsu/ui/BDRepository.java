@@ -16,22 +16,22 @@
 
 package nsu.ui;
 
-import java.sql.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Date;
 
-/**
- * @author Dave Syer
- */
-public class BDRespository implements StatisticsRepository {
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.TreeMap;
+
+public class BDRepository implements StatisticsRepository {
 
 	private static Connection con = null;
 	private static Statement st = null;
 
 	public static final String url = "jdbc:mysql://localhost:3306/weightdetector?useSSL=false";
 	public static final String user = "root";
-	public static final String pwd = "root1965";
+	public static final String pwd = "";
+
 
 	public void startConnection(){
 		try {
@@ -49,52 +49,32 @@ public class BDRespository implements StatisticsRepository {
 	}
 
 	@Override
+
 	public ArrayList<Statistics> findAll() throws SQLException {
 		ArrayList<Statistics> stat = new ArrayList<Statistics>();
-		// все, что закомменчено - альтернативное решение, если вдруг понадобится
-//		ArrayList<Date> dateSorted = new ArrayList<Date>();
-//		ArrayList<Statistics> sortedStat = new ArrayList<Statistics>();
-//		Double delta = null;
-
+		TreeMap<LocalDate, Statistics> sorted = new TreeMap<>();
 		try{
 			startConnection();
+
 			ResultSet rs = st.executeQuery("select * from statistics;");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 			while (rs.next()) {
 				Statistics statistics = new Statistics();
 				statistics.setId(rs.getLong(1));
-				statistics.setWeight(rs.getString(3));
+				statistics.setWeight(Float.toString(rs.getFloat(3)));
 				statistics.setDate(rs.getString(2));
 
-				stat.add(statistics);
+				sorted.put(LocalDate.parse(statistics.getDate(), formatter), statistics);
 			}
-
-//			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//
-//			for (Statistics statistics : stat) {
-//				dateSorted.add(dateFormat.parse(statistics.getDate()));
-//			}
-//
-//			Collections.sort(dateSorted);
-//
-//			for (Date date: dateSorted) {
-//				for (Statistics statistics: stat) {
-//					if (dateFormat.parse(statistics.getDate()).equals(date)) {
-//						sortedStat.add(statistics);
-//					}
-//				}
-//			}
-//
-//			for (int i=0; i<sortedStat.size(); i++) {
-//				if (i==0) {
-//					sortedStat.get(0).setDelta("0,0 кг");
-//				}
-//				else {
-//					delta = Double.parseDouble(sortedStat.get(i).getWeight())-Double.parseDouble(sortedStat.get(i-1).getWeight());
-//					sortedStat.get(i).setDelta(String.format("%.1f", delta) + " кг");
-//				}
-//			}
-
+			stat = new ArrayList<>(sorted.values());
+			stat.get(0).setDelta("0.0");
+			for(int i = 1; i < stat.size(); i++){
+				Statistics temp = stat.get(i);
+				float delta = Float.parseFloat(temp.getWeight()) - Float.parseFloat(stat.get(i-1).getWeight());
+				String stringDelta =  (delta > 0) ? "+" + delta : Float.toString(delta);
+				temp.setDelta(stringDelta);
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -102,8 +82,6 @@ public class BDRespository implements StatisticsRepository {
 			closeAll();
 		}
 
-//		return sortedStat;
-		// возвращает неотсортированный список по дате, у всех дельта = null
 		return stat;
 	}
 

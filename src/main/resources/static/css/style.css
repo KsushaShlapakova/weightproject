@@ -78,3 +78,11 @@ input:hover:not(:active) {
     -moz-transition: all 0.3s ease;
     -o-transition: all 0.3s ease;
 }
+
+.positive{
+    color: red;
+}
+
+.negative{
+    color: green;
+}

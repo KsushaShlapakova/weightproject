@@ -15,12 +15,9 @@ package nsu.ui;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentMap;
 
-/**
- * @author Rob Winch
- */
 public interface StatisticsRepository {
+
 
 	ArrayList<Statistics> findAll() throws SQLException;
 
