@@ -50,7 +50,7 @@ public class StatisticsController {
 
 	@RequestMapping("/history")
 	public ModelAndView history() throws SQLException {
-		Iterable<Statistics> statistics = this.statisticsRepository.findAll().values();
+		Iterable<Statistics> statistics = this.statisticsRepository.findAll();
 		return new ModelAndView("stat/history", "statistics", statistics);
 	}
 
@@ -67,13 +67,11 @@ public class StatisticsController {
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public ModelAndView create(@Valid Statistics statistics, BindingResult result,
                                RedirectAttributes redirect) throws SQLException {
-		System.out.println(statistics.getId());
 		if (result.hasErrors()) {
 			return new ModelAndView("stat/create", "createErrors", result.getAllErrors());
 		}
 		statistics = this.statisticsRepository.save(statistics);
 		//redirect.addFlashAttribute("globalStatistics", "Successfully added");
-		System.out.println(statistics.getId());
 		return new ModelAndView("redirect:/history");
 	}
 
