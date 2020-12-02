@@ -21,18 +21,17 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.TreeMap;
-
 
 public class BDRepository implements StatisticsRepository {
 
 	private static Connection con = null;
 	private static Statement st = null;
 
-	public static final String url = "jdbc:mysql://localhost:3306/weightdetector?useUnicode=true&characterEncoding=utf8";
+	public static final String url = "jdbc:mysql://localhost:3306/weightdetector?useSSL=false";
 	public static final String user = "root";
-	public static final String pwd = "password";
+	public static final String pwd = "";
+
 
 	public void startConnection(){
 		try {
@@ -50,19 +49,22 @@ public class BDRepository implements StatisticsRepository {
 	}
 
 	@Override
-	public List<Statistics> findAll() throws SQLException {
-		List<Statistics> stat;
-		try {
+
+	public ArrayList<Statistics> findAll() throws SQLException {
+		ArrayList<Statistics> stat = new ArrayList<Statistics>();
+		TreeMap<LocalDate, Statistics> sorted = new TreeMap<>();
+		try{
 			startConnection();
+
 			ResultSet rs = st.executeQuery("select * from statistics;");
-			TreeMap<LocalDate, Statistics> sorted = new TreeMap<>();
-			DateTimeFormatter formatter
-					= DateTimeFormatter.ofPattern("yyyy-dd-MM");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
 			while (rs.next()) {
 				Statistics statistics = new Statistics();
 				statistics.setId(rs.getLong(1));
 				statistics.setWeight(Float.toString(rs.getFloat(3)));
 				statistics.setDate(rs.getString(2));
+
 				sorted.put(LocalDate.parse(statistics.getDate(), formatter), statistics);
 			}
 			stat = new ArrayList<>(sorted.values());
@@ -73,26 +75,46 @@ public class BDRepository implements StatisticsRepository {
 				String stringDelta =  (delta > 0) ? "+" + delta : Float.toString(delta);
 				temp.setDelta(stringDelta);
 			}
-		}finally {
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
 			closeAll();
 		}
+
 		return stat;
 	}
+
 
 	@Override
 	public Statistics save(Statistics stat) throws SQLException {
 		Long id = null;
 		try {
 			startConnection();
+			String respond = null;
 
-			String queryStudent = "insert into statistics (date, weight, delta)" +
-					" values ('" + stat.getDate() + "', '" + stat.getWeight() + "', '" +
-					stat.getDelta() + "');";
+			ResultSet rs = st.executeQuery("select id, date from statistics where date = '" + stat.getDate() + "';");
 
-			st.executeUpdate(queryStudent);
-			ResultSet potencial_id = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "';");
-			while (potencial_id.next()) {
-				id = potencial_id.getLong(1);
+			while (rs.next()) {
+				respond = rs.getString("date");
+				id = rs.getLong("id");
+			}
+
+			if (respond == null) {
+
+				String queryStudent = "insert into statistics (date, weight)" +
+						" values ('" + stat.getDate() + "', '" + stat.getWeight() + "');";
+
+				st.executeUpdate(queryStudent);
+				ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "';");
+				while (potentialId.next()) {
+					id = potentialId.getLong(1);
+				}
+			} else {
+
+				String queryStudent = "update statistics set weight ='" + stat.getWeight() + "' where date = '" + stat.getDate() + "';";
+				st.executeUpdate(queryStudent);
+
 			}
 
 		}finally {

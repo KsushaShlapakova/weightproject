@@ -27,19 +27,20 @@
     </div>
 
     <label for="date">Date</label>
-    <input id = "date" type="text"
+    <input id = "date" type="date" name="calendar"
            th:field="*{date}"
            th:class="${#fields.hasErrors('date')} ? 'field-error'"/>
+
 
     <label for="weight">Weight</label>
     <input id = "weight" type="text"
            th:field="*{weight}"
            th:class="${#fields.hasErrors('weight')} ? 'field-error'"/>
 
-    <label for="delta">Delta</label>
-    <input id = "delta" type="text"
-           th:field="*{delta}"
-           th:class="${#fields.hasErrors('delta')} ? 'field-error'"/>
+    <script>
+  document.getElementById('date').max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+    </script>
+
     <div class="form-actions">
       <input type="submit" value="СОХРАНИТЬ"/>
     </div>
