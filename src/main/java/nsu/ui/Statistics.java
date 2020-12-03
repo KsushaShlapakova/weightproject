@@ -26,13 +26,13 @@ public class Statistics {
 
 	private Long id;
 
-	@NotEmpty(message = "Date is required.")
+	@NotEmpty(message = "Дата обязательна для заполнения.")
 	private String date;
 
 	private String delta;
 
-	@Pattern(regexp = "^[1-9]\\d?\\d?$", message = "You entered a negative number.")
-	@NotEmpty(message = "Weight is required.")
+	@NotEmpty(message = "Вес обязателен для заполнения.")
+    @Pattern(regexp = "^[+]?([0-9]*[.,])?[0-9]+$", message = "Данные введены некорректно.")
 	private String weight;
 
 	private Calendar created = Calendar.getInstance();

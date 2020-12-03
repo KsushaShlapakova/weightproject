@@ -2,7 +2,7 @@
     font-family: Tahoma;
     position: relative;
     top: 40%;
-    left: 12%;
+    left: 15%;
     text-align: center;
 }
 
@@ -123,4 +123,15 @@ label {
 
 .negative{
     color: green;
+}
+
+.alert-danger, .alert-error {
+    color: #b94a48;
+    background-color: #f2dede;
+    border-color: #eed3d7;
+    width: 400px;
+}
+
+.alert {
+    width: 400px;
 }

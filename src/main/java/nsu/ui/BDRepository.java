@@ -89,6 +89,7 @@ public class BDRepository implements StatisticsRepository {
 	@Override
 	public Statistics save(Statistics stat) throws SQLException {
 		Long id = null;
+		String dotWeight = null;
 		try {
 			startConnection();
 			String respond = null;
@@ -101,9 +102,9 @@ public class BDRepository implements StatisticsRepository {
 			}
 
 			if (respond == null) {
-
+				dotWeight = stat.getWeight().replace(",", ".");
 				String queryStudent = "insert into statistics (date, weight)" +
-						" values ('" + stat.getDate() + "', '" + stat.getWeight() + "');";
+						" values ('" + stat.getDate() + "', '" + dotWeight + "');";
 
 				st.executeUpdate(queryStudent);
 				ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "';");
@@ -112,7 +113,7 @@ public class BDRepository implements StatisticsRepository {
 				}
 			} else {
 
-				String queryStudent = "update statistics set weight ='" + stat.getWeight() + "' where date = '" + stat.getDate() + "';";
+				String queryStudent = "update statistics set weight ='" + dotWeight + "' where date = '" + stat.getDate() + "';";
 				st.executeUpdate(queryStudent);
 
 			}
