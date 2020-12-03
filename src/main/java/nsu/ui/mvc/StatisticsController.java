@@ -15,6 +15,7 @@ package nsu.ui.mvc;
 
 import javax.validation.Valid;
 
+import nsu.ui.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -45,7 +46,17 @@ public class StatisticsController {
 
 	@RequestMapping("/")
 	public ModelAndView red() throws SQLException {
-		return new ModelAndView("redirect:/history");
+		return new ModelAndView("redirect:/login");
+	}
+
+	@RequestMapping("login")
+	public String login(@ModelAttribute User user) {
+		return "stat/login";
+	}
+
+	@RequestMapping("profile")
+	public String profile(@ModelAttribute User user) {
+		return "stat/profile";
 	}
 
 	@RequestMapping("/history")
@@ -72,6 +83,15 @@ public class StatisticsController {
 		}
 		statistics = this.statisticsRepository.save(statistics);
 		//redirect.addFlashAttribute("globalStatistics", "Successfully added");
+		return new ModelAndView("redirect:/history");
+	}
+
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public ModelAndView loginPost(@Valid User user, BindingResult result,
+							   RedirectAttributes redirect) throws SQLException {
+		if (result.hasErrors()) {
+			return new ModelAndView("stat/login", "createErrors", result.getAllErrors());
+		}
 		return new ModelAndView("redirect:/history");
 	}
 

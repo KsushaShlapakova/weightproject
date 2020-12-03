@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+<head>
+    <title>PROFILE</title>
+    <link rel="stylesheet"
+          th:href="@{/css/bootstrap.min.css}"
+          href="../../static/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href = "css/style.css"/>
+</head>
+<body>
+<div layout:fragment="content" class="container" id="container-profile">
+    <form id="statisticsCreate"
+          th:action="@{/profile}"
+          th:object="${user}"
+          action="#"
+          method="post">
+        <div th:if="${#fields.hasErrors('*')}"
+             class="alert alert-error">
+            <p th:each="error : ${#fields.errors('*')}"
+               th:text="${error}">
+                Validation error
+            </p>
+        </div>
+        <div class="profile-blog">
+            <div class = "inputs" style="display: table">
+
+                <div style="display: table-row">
+                    <label for="email">EMAIL: </label>
+                    <input id = "email" type="email" style="display: table-row" readonly="readonly"
+                           value="${user.email}"
+                           th:field="*{email}"
+                           th:class="${#fields.hasErrors('email')} ? 'field-error'"/>
+                </div>
+
+                <div style="display: table-row">
+                    <label for="name">ИМЯ: </label>
+                    <input id = "name" type="text" style="display: table-row"
+                           th:field="*{name}"
+                           th:class="${#fields.hasErrors('name')} ? 'field-error'"/>
+                </div>
+
+                <div style="display: table-row">
+                    <label for="password">ПАРОЛЬ: </label>
+                    <input id = "password" type="password" style="display: table-row"
+                           value = "${user.password}"
+                           th:field="*{password}"
+                           th:class="${#fields.hasErrors('password')} ? 'field-error'"/>
+                </div>
+
+                <div style="display: table-row">
+                    <label for="age">ВОЗРАСТ: </label>
+                    <input id = "age" type="text" style="display: table-row"
+                           th:field="*{age}"
+                           th:class="${#fields.hasErrors('age')} ? 'field-error'"/>
+                    <label for="age">лет</label>
+                </div>
+
+                <div style="display: table-row">
+                    <label for="height">РОСТ: </label>
+                    <input id = "height" type="text" style="display: table-row"
+                           th:field="*{height}"
+                           th:class="${#fields.hasErrors('height')} ? 'field-error'"/>
+                    <label for="height">см</label>
+                </div>
+            </div>
+
+            <div class="form-actions" id="profile-button">
+                <input type="submit" value="СОХРАНИТЬ"/>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
