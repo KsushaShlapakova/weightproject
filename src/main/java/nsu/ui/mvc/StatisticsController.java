@@ -59,7 +59,7 @@ public class StatisticsController {
 		return new ModelAndView("stat/view", "statistics", statistics);
 	}
 
-	@RequestMapping(params = "create", method = RequestMethod.GET)
+	@RequestMapping("create")
 	public String createForm(@ModelAttribute Statistics statistics) {
 		return "stat/create";
 	}

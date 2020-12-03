@@ -73,8 +73,10 @@ public class BDRepository implements StatisticsRepository {
 				Statistics temp = stat.get(i);
 				float delta = Float.parseFloat(temp.getWeight()) - Float.parseFloat(stat.get(i-1).getWeight());
 				String stringDelta =  (delta > 0) ? "+" + delta : Float.toString(delta);
-				temp.setDelta(stringDelta);
+				temp.setDelta(stringDelta.substring(0, stringDelta.indexOf(".") + 2));
 			}
+
+			rs.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -111,12 +113,16 @@ public class BDRepository implements StatisticsRepository {
 				while (potentialId.next()) {
 					id = potentialId.getLong(1);
 				}
+
+				potentialId.close();
 			} else {
 
 				String queryStudent = "update statistics set weight ='" + dotWeight + "' where date = '" + stat.getDate() + "';";
 				st.executeUpdate(queryStudent);
 
 			}
+
+			rs.close();
 
 		}finally {
 			closeAll();
