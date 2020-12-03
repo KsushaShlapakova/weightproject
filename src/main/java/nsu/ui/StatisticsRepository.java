@@ -14,14 +14,12 @@
 package nsu.ui;
 
 import java.sql.SQLException;
-import java.util.concurrent.ConcurrentMap;
+import java.util.ArrayList;
 
-/**
- * @author Rob Winch
- */
 public interface StatisticsRepository {
 
-	ConcurrentMap<Long, Statistics> findAll() throws SQLException;
+
+	ArrayList<Statistics> findAll() throws SQLException;
 
 	Statistics save(Statistics message) throws SQLException;
 

@@ -30,7 +30,7 @@ public class SampleWebUiApplication {
 
 	@Bean
 	public StatisticsRepository statisticsRepository() {
-		return new BDRespository();
+		return new BDRepository();
 	}
 
 	@Bean

@@ -4,22 +4,24 @@
   <title>Layout</title>
   <link rel="stylesheet"
         th:href="@{/css/bootstrap.min.css}"
-        href="../../css/bootstrap.min.css"/>
-  <link rel="stylesheet" href="../../css/style.css"/>
+        href="/css/bootstrap.min.css"/>
+  <link rel="stylesheet" th:href = "@{css/style.css}"/>
 </head>
 <body>
 <div class="block-menu">
   <div class="navbar">
     <div class="menu-wrapper">
       <ul class="menu">
-        <li><a href="history.html" th:href="@{/(history)}">ИСТОРИЯ</a>
+        <li>ИМЯ...</li>
+        <li><a href="history.html" th:href="@{/profile}">ПРОФИЛЬ</a>
         </li>
-        <li><a href="create.html" th:href="@{/(create)}">ЗАПИСАТЬ ДАННЫЕ</a>
+        <li><a href="history.html" th:href="@{/history}">ИСТОРИЯ</a>
+        </li>
+        <li><a href="create.html" th:href="@{/create}">ЗАПИСАТЬ ДАННЫЕ</a>
         </li>
       </ul>
     </div>
   </div>
-  <h1 layout:fragment="header">Layout</h1>
   <div layout:fragment="content">
     Fake content
   </div>

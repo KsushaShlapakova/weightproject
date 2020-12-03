@@ -2,8 +2,22 @@
     font-family: Tahoma;
     position: relative;
     top: 40%;
-    left: 12%;
+    left: 15%;
     text-align: center;
+}
+
+h1 {
+    margin-top: 3%;
+    margin-bottom: 7%;
+}
+
+#f {
+    padding: 17px 20px 18px;
+    margin-top: 18px;
+    margin-bottom: 18px;
+    background-color: #fff0;
+    border-top: 0px;
+    *zoom: 1;
 }
 
 body {
@@ -37,6 +51,26 @@ input:hover:not(:active) {
   background: #bee8dc;
 }
 
+label {
+    display: table-cell;
+}
+
+.inputs {
+    position: relative;
+    margin: 4%;
+    top: 10%;
+    left: 29%;
+}
+
+#weight {
+    width: 140px;
+}
+
+#date {
+    width: 210px;
+    margin: 13px;
+}
+
 .add {
     font-family: Tahoma;
     position: absolute;
@@ -52,14 +86,17 @@ input:hover:not(:active) {
      left: 0;
      overflow: auto;
      background: #84c286fe;
+     border: 2px solid #474747;
 }
 .menu {
     list-style-type: none;
     margin: 12%;
+    line-height: 20px;
 }
 .menu li {
     float: none;
     margin: 8%;
+    width: auto;
 }
 .menu li a {
     display: block;
@@ -71,10 +108,104 @@ input:hover:not(:active) {
     text-align: left;
     text-transform: uppercase;
 }
+
 .menu li a:hover {
-    text-decoration: underline;
+    border-bottom: 2px black solid;
     transition: all 0.3s ease;
     -webkit-transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;
     -o-transition: all 0.3s ease;
 }
+
+.positive{
+    color: red;
+}
+
+.negative{
+    color: green;
+}
+
+.alert-danger, .alert-error {
+    color: #b94a48;
+    background-color: #f2dede;
+    border-color: #eed3d7;
+    width: 90%;
+    text-align: left;
+}
+
+.header-login {
+    position: relative;
+    top:0;
+    bottom:0;
+    left:40%;
+    right:0;
+    margin:5%;
+}
+
+.login-inputs {
+    border: 2px solid #474747;
+    background: #84c286fe;
+    position: absolute;
+    margin: 4%;
+    top: 10%;
+    left: 23%;
+    margin: 5%;
+    width: 700px;
+    height: 80px;
+}
+
+.log-input {
+    margin: auto;
+    position: relative;
+    top: 15; left: 250; bottom: 0; right: 0;
+}
+
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+    display: inline-block;
+    height: 18px;
+    padding: 4px;
+    margin: 22px;
+    font-size: 13px;
+    line-height: 18px;
+    color: #555;
+}
+
+.intro{
+    position:relative;
+    left: 7%;
+}
+
+#login {
+    position: absolute;
+    padding: 17px 20px 18px;
+    margin: 20px;
+    background: #474747;
+    background-color: #fff0;
+    border-top: 0px;
+    *zoom: 1;
+    left: 49%;
+    top: 40%;
+    width: 50px;
+}
+
+#container-profile {
+    font-family: Tahoma;
+    position: relative;
+    top: 40%;
+    left: -9%;
+    text-align: left;
+}
+
+#profile-button {
+position: absolute;
+    padding: 17px 20px 18px;
+    margin: 15px;
+    background-color: #fff0;
+    border-top: 0px;
+    *zoom: 1;
+    left: 43%;
+    top: 40%
+    width: 50px;
+}
+
+
