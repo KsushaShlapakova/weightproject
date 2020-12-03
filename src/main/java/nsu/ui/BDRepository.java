@@ -73,7 +73,7 @@ public class BDRepository implements StatisticsRepository {
 				Statistics temp = stat.get(i);
 				float delta = Float.parseFloat(temp.getWeight()) - Float.parseFloat(stat.get(i-1).getWeight());
 				String stringDelta =  (delta > 0) ? "+" + delta : Float.toString(delta);
-				temp.setDelta(stringDelta);
+				temp.setDelta(stringDelta.substring(0, stringDelta.indexOf(".") + 2));
 			}
 
 		} catch (Exception e) {
