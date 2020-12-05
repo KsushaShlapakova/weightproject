@@ -25,4 +25,6 @@ public interface StatisticsRepository {
 
 	Statistics findStatistics(Long id);
 
+	void delete(Long id) throws SQLException;
+
 }

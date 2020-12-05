@@ -133,6 +133,19 @@ public class BDRepository implements StatisticsRepository {
 	}
 
 	@Override
+	public void delete(Long id) throws SQLException {
+		try {
+			startConnection();
+
+			String query = "delete from statistics where id = '" + id + "';";
+			st.executeUpdate(query);
+
+		} finally {
+			closeAll();
+		}
+	}
+
+	@Override
 	public Statistics findStatistics(Long id) {
 		return null;
 	}
