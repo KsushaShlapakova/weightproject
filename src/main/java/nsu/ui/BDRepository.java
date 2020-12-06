@@ -49,15 +49,15 @@ public class BDRepository implements StatisticsRepository {
 	}
 
 	@Override
-
-	public ArrayList<Statistics> findAll() throws SQLException {
+	public ArrayList<Statistics> findAll(User user) throws SQLException {
 		ArrayList<Statistics> stat = new ArrayList<Statistics>();
 		TreeMap<LocalDate, Statistics> sorted = new TreeMap<>();
-		try{
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+		try {
 			startConnection();
 
-			ResultSet rs = st.executeQuery("select * from statistics;");
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			ResultSet rs = st.executeQuery("select * from statistics where user_id='" + user.getId()+"';");
 
 			while (rs.next()) {
 				Statistics statistics = new Statistics();
@@ -67,26 +67,25 @@ public class BDRepository implements StatisticsRepository {
 
 				sorted.put(LocalDate.parse(statistics.getDate(), formatter), statistics);
 			}
+
 			stat = new ArrayList<>(sorted.values());
-			stat.get(0).setDelta("0.0");
-			for(int i = 1; i < stat.size(); i++){
-				Statistics temp = stat.get(i);
-				float delta = Float.parseFloat(temp.getWeight()) - Float.parseFloat(stat.get(i-1).getWeight());
-				String stringDelta =  (delta > 0) ? "+" + delta : Float.toString(delta);
-				temp.setDelta(stringDelta.substring(0, stringDelta.indexOf(".") + 2));
+			if (!(stat.size() == 0)) {
+				stat.get(0).setDelta("0.0");
+				for (int i = 1; i < stat.size(); i++) {
+					Statistics temp = stat.get(i);
+					float delta = Float.parseFloat(temp.getWeight()) - Float.parseFloat(stat.get(i - 1).getWeight());
+					String stringDelta = (delta > 0) ? "+" + delta : Float.toString(delta);
+					temp.setDelta(stringDelta.substring(0, stringDelta.indexOf(".") + 2));
+				}
 			}
-
 			rs.close();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			closeAll();
 		}
-
 		return stat;
 	}
-
 
 	@Override
 	public Statistics save(Statistics stat) throws SQLException {
@@ -133,24 +132,64 @@ public class BDRepository implements StatisticsRepository {
 	}
 
 	@Override
-	public Statistics findStatistics(Long id) throws SQLException {
-		Statistics targetStatistics;
-		try{
+	public void delete(Long id) throws SQLException {
+		try {
 			startConnection();
-			ResultSet rs = st.executeQuery("select * from statistics where id = "+ id +";");
-			Statistics statistics = new Statistics();
-			while (rs.next()) {
-				statistics.setId(rs.getLong(1));
-				statistics.setDate(rs.getString(2));
-				statistics.setWeight(rs.getString(3));
-			}
-			targetStatistics = statistics;
-		}finally {
+
+			String query = "delete from statistics where id = '" + id + "';";
+			st.executeUpdate(query);
+
+		} finally {
 			closeAll();
 		}
-
-		return targetStatistics;
 	}
 
+	@Override
+	public boolean[] check_user(String email, String password) throws SQLException {
+		boolean[] result = {false, false};
+		try {
+			startConnection();
+			ResultSet rs = st.executeQuery("select * from users where email = '" + email + "';");
+			while (rs.next()) {
+				result[0] = true;
+				String pass = rs.getString(3);
+				if (pass.equals(password)) {
+					result[1] = true;
+				}
+			}
+			rs.close();
+		}
+		catch (Exception e) { e.printStackTrace(); }
+		finally { closeAll(); }
+		return result;
+	}
+
+	@Override
+	public User create_user(User new_user) throws SQLException {
+		try {
+			startConnection();
+			String queryUser = "insert into users (email, password, name, age, height)" +
+					" values ('" + new_user.getEmail() + "', '" + new_user.getPassword() + "', '" +
+					new_user.getName() + "', '" + new_user.getAge() + "', '" + new_user.getHeight() + "');";
+			st.executeUpdate(queryUser);
+			String query_id = "select * from users where id = (select max(id) from users);";
+			ResultSet rs = st.executeQuery(query_id);
+			while (rs.next()) {
+				new_user.setId(rs.getLong(1));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			closeAll();
+		}
+		return new_user;
+	}
+
+	@Override
+	public Statistics findStatistics(Long id) {
+		return null;
+	}
 
 }

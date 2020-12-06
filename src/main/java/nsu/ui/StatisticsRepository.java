@@ -19,10 +19,16 @@ import java.util.ArrayList;
 public interface StatisticsRepository {
 
 
-	ArrayList<Statistics> findAll() throws SQLException;
+	ArrayList<Statistics> findAll(User user) throws SQLException;
 
 	Statistics save(Statistics message) throws SQLException;
 
 	Statistics findStatistics(Long id) throws SQLException;
+
+	void delete(Long id) throws SQLException;
+
+	boolean[] check_user(String email, String password) throws SQLException;
+
+	User create_user(User user) throws SQLException;
 
 }

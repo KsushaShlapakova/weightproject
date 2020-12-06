@@ -21,6 +21,7 @@
             <td width="60%">ДАТА</td>
             <td width="20%">ВЕС</td>
             <td width="20%">ДЕЛЬТА</td>
+            <td width="20%"></td>
           </tr>
         </thead>
         <tbody>
@@ -39,6 +40,7 @@
                 th:text="${statistic.delta + ' кг'}">
               Delta
             </td>
+            <td><a th:href="@{'/delete/' + ${statistic.id}}" th:text="Удалить" onclick="return confirm('Вы уверены, что хотите удалить запись?');">Удалить</a></td>
           </tr>
         </tbody>
       </table>

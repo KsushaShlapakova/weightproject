@@ -19,10 +19,7 @@ import nsu.ui.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -65,9 +62,16 @@ public class StatisticsController {
 	}
 
 	@RequestMapping("/history")
-	public ModelAndView history() throws SQLException {
-		Iterable<Statistics> statistics = this.statisticsRepository.findAll();
+	public ModelAndView history(@ModelAttribute User user) throws SQLException {
+		Iterable<Statistics> statistics = this.statisticsRepository.findAll(user);
 		return new ModelAndView("stat/history", "statistics", statistics);
+	}
+
+	@RequestMapping("/delete/{id}")
+	public String delete(@PathVariable(value = "id") long id) throws SQLException {
+		System.out.println(id);
+		this.statisticsRepository.delete(id);
+		return "redirect:/history";
 	}
 
 	@RequestMapping("{id}")
@@ -92,13 +96,39 @@ public class StatisticsController {
 		return new ModelAndView("redirect:/history");
 	}
 
+
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ModelAndView loginPost(@Valid User user, BindingResult result,
-							   RedirectAttributes redirect) throws SQLException {
+								  RedirectAttributes redirect) throws SQLException {
 		if (result.hasErrors()) {
 			return new ModelAndView("stat/login", "createErrors", result.getAllErrors());
 		}
-		return new ModelAndView("redirect:/history");
+		// проверка е-мэйл и пароля
+		if ((this.statisticsRepository.check_user(user.getEmail(), user.getPassword()))[0]) {
+			if ((this.statisticsRepository.check_user(user.getEmail(), user.getPassword()))[1]) {
+				// вернуть юзера по названию почты (прописать метод в репозитории)
+				// сделать history(user)
+				return new ModelAndView("redirect:/history");
+			}
+			else {
+				// wrong password
+				return new ModelAndView("stat/login");
+			}
+		}
+		// create new user
+		return new ModelAndView("stat/profile");
+	}
+
+	@RequestMapping(value = "/profile", method = RequestMethod.POST)
+	public ModelAndView create_user(@Valid User user, BindingResult result,
+									RedirectAttributes redirect) throws SQLException {
+		if (result.hasErrors()) {
+			return new ModelAndView("stat/profile", "createErrors", result.getAllErrors());
+		}
+		User new_user = this.statisticsRepository.create_user(user);
+
+		//return new ModelAndView("redirect:/history");
+		return history(new_user);
 	}
 
 	@RequestMapping("foo")
