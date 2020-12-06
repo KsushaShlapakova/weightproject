@@ -59,6 +59,11 @@ public class StatisticsController {
 		return "stat/profile";
 	}
 
+	@RequestMapping("edit/{id}")
+	public ModelAndView createEditForm(@PathVariable("id") Statistics statistics) throws SQLException {
+		return new ModelAndView("stat/edit", "statistics", statistics);
+	}
+
 	@RequestMapping("/history")
 	public ModelAndView history() throws SQLException {
 		Iterable<Statistics> statistics = this.statisticsRepository.findAll();
@@ -83,6 +88,7 @@ public class StatisticsController {
 		}
 		statistics = this.statisticsRepository.save(statistics);
 		//redirect.addFlashAttribute("globalStatistics", "Successfully added");
+		new ModelAndView("layout", "param", statistics.getWeight());
 		return new ModelAndView("redirect:/history");
 	}
 

@@ -23,6 +23,6 @@ public interface StatisticsRepository {
 
 	Statistics save(Statistics message) throws SQLException;
 
-	Statistics findStatistics(Long id);
+	Statistics findStatistics(Long id) throws SQLException;
 
 }

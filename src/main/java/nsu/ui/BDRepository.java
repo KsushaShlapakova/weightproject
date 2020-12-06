@@ -133,8 +133,24 @@ public class BDRepository implements StatisticsRepository {
 	}
 
 	@Override
-	public Statistics findStatistics(Long id) {
-		return null;
+	public Statistics findStatistics(Long id) throws SQLException {
+		Statistics targetStatistics;
+		try{
+			startConnection();
+			ResultSet rs = st.executeQuery("select * from statistics where id = "+ id +";");
+			Statistics statistics = new Statistics();
+			while (rs.next()) {
+				statistics.setId(rs.getLong(1));
+				statistics.setDate(rs.getString(2));
+				statistics.setWeight(rs.getString(3));
+			}
+			targetStatistics = statistics;
+		}finally {
+			closeAll();
+		}
+
+		return targetStatistics;
 	}
+
 
 }
