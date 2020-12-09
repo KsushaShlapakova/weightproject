@@ -129,8 +129,10 @@ label {
     color: #b94a48;
     background-color: #f2dede;
     border-color: #eed3d7;
-    width: 90%;
-    text-align: left;
+    width: 30%;
+    text-align: center;
+    bottom: 5%;
+    right: 5%;
 }
 
 .header-login {

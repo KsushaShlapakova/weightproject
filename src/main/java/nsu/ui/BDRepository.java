@@ -170,17 +170,29 @@ public class BDRepository implements StatisticsRepository {
 
 	@Override
 	public User create_user(User new_user) throws SQLException {
+		System.out.println(new_user.getName());
+		System.out.println(new_user.getId());
 		try {
 			startConnection();
-			String queryUser = "insert into users (email, password, name, age, height)" +
-					" values ('" + new_user.getEmail() + "', '" + new_user.getPassword() + "', '" +
-					new_user.getName() + "', '" + new_user.getAge() + "', '" + new_user.getHeight() + "');";
-			st.executeUpdate(queryUser);
+			boolean userExistence = checkDB(new_user);
+			if (!userExistence) {
+				String queryUser = "insert into users (email, password, name, age, height)" +
+						" values ('" + new_user.getEmail() + "', '" + new_user.getPassword() + "', '" +
+						new_user.getName() + "', '" + new_user.getAge() + "', '" + new_user.getHeight() + "');";
+				st.executeUpdate(queryUser);
 //			String query_id = "select * from users where email='"+new_user.getEmail()+"';";
-			String query_id = "select * from users where id = (select max(id) from users);";
-			ResultSet rs = st.executeQuery(query_id);
-			while (rs.next()) {
-				new_user.setId(rs.getLong(1));
+				String query_id = "select * from users where id = (select max(id) from users);";
+				ResultSet rs = st.executeQuery(query_id);
+				while (rs.next()) {
+					new_user.setId(rs.getLong(1));
+				}
+			}else{
+				System.out.println("AAAAA");
+				String query = "UPDATE users SET name = '" + new_user.getName() +"', password = '" + new_user.getPassword() +
+						"', age = '" + new_user.getAge() +
+						"', height = '" + new_user.getHeight() +
+						"' WHERE id = " + new_user.getId() + ";";
+				st.executeUpdate(query);
 			}
 
 		} catch (Exception e) {
@@ -190,6 +202,20 @@ public class BDRepository implements StatisticsRepository {
 			closeAll();
 		}
 		return new_user;
+	}
+
+	public boolean checkDB(User user) throws SQLException {
+		String queryCheck = "SELECT EXISTS(SELECT id FROM users WHERE email = '"+ user.getEmail() + "');";
+		ResultSet rs = st.executeQuery(queryCheck);
+
+		while (rs.next()){
+			if (rs.getString(1).equals("0")){
+				rs.close();
+				return false;
+			}
+		}
+		rs.close();
+		return true;
 	}
 
 	@Override
@@ -218,8 +244,38 @@ public class BDRepository implements StatisticsRepository {
 	}
 
 	@Override
-	public Statistics findStatistics(Long id) {
-		return null;
+	public Statistics findStatistics(Long id) throws SQLException {
+		Statistics targetStatistics;
+		try{
+			startConnection();
+			ResultSet rs = st.executeQuery("select * from statistics where id = "+ id +";");
+			Statistics statistics = new Statistics();
+			while (rs.next()) {
+				statistics.setId(rs.getLong(1));
+				statistics.setWeight(rs.getString(4));
+				statistics.setDate(rs.getString(3));
+			}
+			targetStatistics = statistics;
+		}finally {
+			closeAll();
+		}
+
+		return targetStatistics;
+	}
+
+	@Override
+	public Statistics editStatistics(Statistics statistics) throws SQLException {
+		try{
+			startConnection();
+
+			String query = "UPDATE statistics SET date = '" + statistics.getDate() + "', weight = '" + statistics.getWeight() +
+					"' WHERE id = " + statistics.getId() + ";";
+			st.executeUpdate(query);
+
+		}finally {
+			closeAll();
+		}
+		return statistics;
 	}
 
 }

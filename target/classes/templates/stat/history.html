@@ -26,7 +26,11 @@
         </thead>
         <tbody>
           <tr th:each="statistic : ${statistics}">
-            <td th:text="${statistic.date}">1</td>
+            <td><a href="edit.html"
+                   th:href="@{'/edit/' + ${statistic.id}}"
+                   th:text="${statistic.date}">
+              Date
+            </a></td>
             <td th:text="${statistic.weight}+ ' кг'">
               Weight
             </td>

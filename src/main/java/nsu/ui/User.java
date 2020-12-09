@@ -2,6 +2,8 @@ package nsu.ui;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Pattern;
+
 public class User {
 
     private Long id;

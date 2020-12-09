@@ -23,6 +23,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 
+import java.sql.SQLException;
+
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
@@ -38,7 +40,13 @@ public class SampleWebUiApplication {
 		return new Converter<String, Statistics>() {
 			@Override
 			public Statistics convert(String id) {
-				return statisticsRepository().findStatistics(Long.valueOf(id));
+				Statistics statistics = null;
+				try {
+					statistics = statisticsRepository().findStatistics(Long.valueOf(id));
+				} catch (SQLException throwables) {
+					throwables.printStackTrace();
+				}
+				return statistics;
 			}
 		};
 	}
