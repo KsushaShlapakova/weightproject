@@ -43,7 +43,7 @@
 
                 <div style="display: table-row">
                     <label for="password">ПАРОЛЬ: </label>
-                    <input id = "password" type="password" style="display: table-row"
+                    <input id = "password" type="text" style="display: table-row"
                            value = "${user.password}"
                            th:field="*{password}"
                            th:class="${#fields.hasErrors('password')} ? 'field-error'"/>

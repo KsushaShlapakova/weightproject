@@ -51,14 +51,36 @@ public class StatisticsController {
 		return "stat/login";
 	}
 
+	// оставляю  на всякий случай старую версию
+//	@RequestMapping("profile")
+//	public String profile(@ModelAttribute User user) {
+//		return "stat/profile";
+//	}
+
 	@RequestMapping("profile")
-	public String profile(@ModelAttribute User user) {
-		return "stat/profile";
+	public ModelAndView profile(@ModelAttribute User user) {
+		User user1 = User.getInstance();
+		if (user1.getId() == null) {
+			return new ModelAndView("redirect:/login");
+		}
+		return new ModelAndView("stat/profile", "user", user1);
 	}
+
+//	@RequestMapping("/history")
+//	public ModelAndView history(@ModelAttribute User user) throws SQLException {
+//
+//		Iterable<Statistics> statistics = this.statisticsRepository.findAll();
+//		return new ModelAndView("stat/history", "statistics", statistics);
+//	}
 
 	@RequestMapping("/history")
 	public ModelAndView history(@ModelAttribute User user) throws SQLException {
-		Iterable<Statistics> statistics = this.statisticsRepository.findAll(user);
+		User user_hist = User.getInstance();
+		if (user_hist.getId() == null) {
+			return new ModelAndView("redirect:/login");
+		}
+		System.out.println("in history: " + user_hist.getId());
+		Iterable<Statistics> statistics = this.statisticsRepository.findAll(user_hist);
 		return new ModelAndView("stat/history", "statistics", statistics);
 	}
 
@@ -74,18 +96,44 @@ public class StatisticsController {
 		return new ModelAndView("stat/view", "statistics", statistics);
 	}
 
+//	@RequestMapping("create")
+//	public String createForm(@ModelAttribute Statistics statistics) {
+//		return "stat/create";
+//	}
+
 	@RequestMapping("create")
-	public String createForm(@ModelAttribute Statistics statistics) {
-		return "stat/create";
+	public ModelAndView createForm(@ModelAttribute Statistics statistics) {
+		User user = User.getInstance();
+		if (user.getId() == null) {
+			return new ModelAndView("redirect:/login");
+		}
+		return new ModelAndView("stat/create");
 	}
+
+//	@RequestMapping(value = "/create", method = RequestMethod.POST)
+//	public ModelAndView create(@Valid Statistics statistics, BindingResult result,
+//                               RedirectAttributes redirect) throws SQLException {
+//		if (result.hasErrors()) {
+//			return new ModelAndView("stat/create", "createErrors", result.getAllErrors());
+//		}
+//		statistics = this.statisticsRepository.save(statistics, this.current_user);
+//		//redirect.addFlashAttribute("globalStatistics", "Successfully added");
+//		return new ModelAndView("redirect:/history");
+//	}
 
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public ModelAndView create(@Valid Statistics statistics, BindingResult result,
-                               RedirectAttributes redirect) throws SQLException {
-		if (result.hasErrors()) {
+							   RedirectAttributes redirect) throws SQLException {
+		User user = User.getInstance();
+		if (user.getId() == null) {
+			return new ModelAndView("stat/login");
+		}
+		else if (result.hasErrors()) {
 			return new ModelAndView("stat/create", "createErrors", result.getAllErrors());
 		}
-		statistics = this.statisticsRepository.save(statistics);
+		User user1 = User.getInstance();
+		System.out.println(user1.getId());
+		statistics = this.statisticsRepository.save(statistics, user.getId());
 		//redirect.addFlashAttribute("globalStatistics", "Successfully added");
 		return new ModelAndView("redirect:/history");
 	}
@@ -100,8 +148,9 @@ public class StatisticsController {
 		// проверка е-мэйл и пароля
 		if ((this.statisticsRepository.check_user(user.getEmail(), user.getPassword()))[0]) {
 			if ((this.statisticsRepository.check_user(user.getEmail(), user.getPassword()))[1]) {
-				// вернуть юзера по названию почты (прописать метод в репозитории)
-				// сделать history(user)
+				this.statisticsRepository.user_set_params(user);
+				user.setInstance(user);
+				System.out.println("in login: " + user.getId());
 				return new ModelAndView("redirect:/history");
 			}
 			else {
@@ -109,20 +158,22 @@ public class StatisticsController {
 				return new ModelAndView("stat/login");
 			}
 		}
-		// create new user
-		return new ModelAndView("stat/profile");
+		// create a new user
+		return new ModelAndView("stat/profile", "user", user);
 	}
 
+
 	@RequestMapping(value = "/profile", method = RequestMethod.POST)
-	public ModelAndView create_user(@Valid User user, BindingResult result,
+	public ModelAndView create_user(@Valid User new_user, BindingResult result,
 									RedirectAttributes redirect) throws SQLException {
 		if (result.hasErrors()) {
 			return new ModelAndView("stat/profile", "createErrors", result.getAllErrors());
 		}
-		User new_user = this.statisticsRepository.create_user(user);
+		User user = this.statisticsRepository.create_user(new_user);
+		user.setInstance(user);
 
-		//return new ModelAndView("redirect:/history");
-		return history(new_user);
+		return new ModelAndView("redirect:/history");
+		//return history(new_user);
 	}
 
 	@RequestMapping("foo")

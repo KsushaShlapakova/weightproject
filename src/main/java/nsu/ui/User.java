@@ -3,7 +3,10 @@ package nsu.ui;
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class User {
+
     private Long id;
+
+    private static User instance;
 
     @NotEmpty(message = "Email обязателен для заполнения.")
     private String email;
@@ -16,6 +19,15 @@ public class User {
     private String age;
 
     private String height;
+
+    public static synchronized User getInstance() {
+        if (instance == null) {
+            System.out.println("instance = 0");
+            instance = new User();
+        }
+        System.out.println(instance.getId());
+        return instance;
+    }
 
     public Long getId() {
         return this.id;
@@ -63,6 +75,10 @@ public class User {
 
     public void setHeight(String height) {
         this.height = height;
+    }
+
+    public void setInstance(User user) {
+        instance = user;
     }
 
 

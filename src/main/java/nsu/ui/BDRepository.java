@@ -50,6 +50,7 @@ public class BDRepository implements StatisticsRepository {
 
 	@Override
 	public ArrayList<Statistics> findAll(User user) throws SQLException {
+
 		ArrayList<Statistics> stat = new ArrayList<Statistics>();
 		TreeMap<LocalDate, Statistics> sorted = new TreeMap<>();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -61,23 +62,24 @@ public class BDRepository implements StatisticsRepository {
 
 			while (rs.next()) {
 				Statistics statistics = new Statistics();
-				statistics.setId(rs.getLong(1));
-				statistics.setWeight(Float.toString(rs.getFloat(3)));
-				statistics.setDate(rs.getString(2));
+				statistics.setId(rs.getLong("id"));
+				statistics.setWeight(Float.toString(rs.getFloat("weight")));
+				statistics.setDate(rs.getString("date"));
 
 				sorted.put(LocalDate.parse(statistics.getDate(), formatter), statistics);
 			}
 
 			stat = new ArrayList<>(sorted.values());
-			if (!(stat.size() == 0)) {
+			if (stat.size() != 0) {
 				stat.get(0).setDelta("0.0");
-				for (int i = 1; i < stat.size(); i++) {
-					Statistics temp = stat.get(i);
-					float delta = Float.parseFloat(temp.getWeight()) - Float.parseFloat(stat.get(i - 1).getWeight());
-					String stringDelta = (delta > 0) ? "+" + delta : Float.toString(delta);
-					temp.setDelta(stringDelta.substring(0, stringDelta.indexOf(".") + 2));
-				}
 			}
+			for(int i = 1; i < stat.size(); i++){
+				Statistics temp = stat.get(i);
+				float delta = Float.parseFloat(temp.getWeight()) - Float.parseFloat(stat.get(i-1).getWeight());
+				String stringDelta =  (delta > 0) ? "+" + delta : Float.toString(delta);
+				temp.setDelta(stringDelta.substring(0, stringDelta.indexOf(".") + 2));
+			}
+
 			rs.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -87,8 +89,9 @@ public class BDRepository implements StatisticsRepository {
 		return stat;
 	}
 
+
 	@Override
-	public Statistics save(Statistics stat) throws SQLException {
+	public Statistics save(Statistics stat, long user_id) throws SQLException {
 		Long id = null;
 		String dotWeight = null;
 		try {
@@ -104,19 +107,19 @@ public class BDRepository implements StatisticsRepository {
 
 			if (respond == null) {
 				dotWeight = stat.getWeight().replace(",", ".");
-				String queryStudent = "insert into statistics (date, weight)" +
-						" values ('" + stat.getDate() + "', '" + dotWeight + "');";
+				String queryStudent = "insert into statistics (user_id, date, weight)" +
+						" values (" + user_id + ", '" + stat.getDate() + "', '" + dotWeight + "');";
 
 				st.executeUpdate(queryStudent);
-				ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "';");
+				ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "' and user_id='"+user_id+"';");
 				while (potentialId.next()) {
-					id = potentialId.getLong(1);
+					id = potentialId.getLong("id");
 				}
 
 				potentialId.close();
 			} else {
 
-				String queryStudent = "update statistics set weight ='" + dotWeight + "' where date = '" + stat.getDate() + "';";
+				String queryStudent = "update statistics set weight ='" + dotWeight + "' where date = '" + stat.getDate() + "' and user_id='"+user_id+"';";
 				st.executeUpdate(queryStudent);
 
 			}
@@ -130,6 +133,7 @@ public class BDRepository implements StatisticsRepository {
 
 		return stat;
 	}
+
 
 	@Override
 	public void delete(Long id) throws SQLException {
@@ -152,7 +156,7 @@ public class BDRepository implements StatisticsRepository {
 			ResultSet rs = st.executeQuery("select * from users where email = '" + email + "';");
 			while (rs.next()) {
 				result[0] = true;
-				String pass = rs.getString(3);
+				String pass = rs.getString("password");
 				if (pass.equals(password)) {
 					result[1] = true;
 				}
@@ -172,6 +176,7 @@ public class BDRepository implements StatisticsRepository {
 					" values ('" + new_user.getEmail() + "', '" + new_user.getPassword() + "', '" +
 					new_user.getName() + "', '" + new_user.getAge() + "', '" + new_user.getHeight() + "');";
 			st.executeUpdate(queryUser);
+//			String query_id = "select * from users where email='"+new_user.getEmail()+"';";
 			String query_id = "select * from users where id = (select max(id) from users);";
 			ResultSet rs = st.executeQuery(query_id);
 			while (rs.next()) {
@@ -185,6 +190,31 @@ public class BDRepository implements StatisticsRepository {
 			closeAll();
 		}
 		return new_user;
+	}
+
+	@Override
+	public void user_set_params(User user) throws SQLException {
+		try {
+			System.out.println("get email in set_params: " + user.getEmail());
+			startConnection();
+			String query = "select * from users where email='" + user.getEmail() + "';";
+			ResultSet rs = st.executeQuery(query);
+			while (rs.next()) {
+				user.setId(rs.getLong(1));
+				user.setEmail(rs.getString(2));
+				user.setPassword(rs.getString(3));
+				user.setName(rs.getString(4));
+				user.setAge(rs.getString(5));
+				user.setHeight(rs.getString(6));
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			closeAll();
+		}
+		System.out.println("in set_params: " + user.getId());
 	}
 
 	@Override

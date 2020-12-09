@@ -21,7 +21,7 @@ public interface StatisticsRepository {
 
 	ArrayList<Statistics> findAll(User user) throws SQLException;
 
-	Statistics save(Statistics message) throws SQLException;
+	Statistics save(Statistics message, long user_id) throws SQLException;
 
 	Statistics findStatistics(Long id);
 
@@ -30,5 +30,7 @@ public interface StatisticsRepository {
 	boolean[] check_user(String email, String password) throws SQLException;
 
 	User create_user(User user) throws SQLException;
+
+	void user_set_params(User user) throws SQLException;
 
 }
