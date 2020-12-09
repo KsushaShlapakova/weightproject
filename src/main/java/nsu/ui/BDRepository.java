@@ -50,7 +50,7 @@ public class BDRepository implements StatisticsRepository {
 
 	@Override
 	public ArrayList<Statistics> findAll(User user) throws SQLException {
-		ArrayList<Statistics> stat = new ArrayList<Statistics>();
+		ArrayList<Statistics> stat = new ArrayList<>();
 		TreeMap<LocalDate, Statistics> sorted = new TreeMap<>();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 

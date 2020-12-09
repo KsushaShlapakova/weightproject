@@ -35,22 +35,12 @@ public class Statistics {
     @Pattern(regexp = "^[+]?([0-9]*[.,])?[0-9]+$", message = "Данные введены некорректно.")
 	private String weight;
 
-	private Calendar created = Calendar.getInstance();
-
 	public Long getId() {
 		return this.id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Calendar getCreated() {
-		return this.created;
-	}
-
-	public void setCreated(Calendar created) {
-		this.created = created;
 	}
 
 	public String getWeight() {

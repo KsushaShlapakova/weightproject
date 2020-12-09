@@ -104,6 +104,7 @@ public class StatisticsController {
 			return new ModelAndView("stat/login", "createErrors", result.getAllErrors());
 		}
 		// проверка е-мэйл и пароля
+		System.out.println(user.getEmail());
 		if ((this.statisticsRepository.check_user(user.getEmail(), user.getPassword()))[0]) {
 			if ((this.statisticsRepository.check_user(user.getEmail(), user.getPassword()))[1]) {
 				// вернуть юзера по названию почты (прописать метод в репозитории)
@@ -116,7 +117,7 @@ public class StatisticsController {
 			}
 		}
 		// create new user
-		return new ModelAndView("stat/profile");
+		return new ModelAndView("redirect:/history");
 	}
 
 	@RequestMapping(value = "/profile", method = RequestMethod.POST)
@@ -135,5 +136,7 @@ public class StatisticsController {
 	public String foo() {
 		throw new RuntimeException("Expected exception in controller");
 	}
+
+	
 
 }
