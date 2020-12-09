@@ -2,16 +2,16 @@ package nsu.ui;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Pattern;
+
 public class User {
 
     private Long id;
 
     private static User instance;
 
-    @NotEmpty(message = "Email обязателен для заполнения.")
     private String email;
 
-    @NotEmpty(message = "Пароль обязателен для заполнения.")
     private String password;
 
     private String name;
@@ -79,6 +79,10 @@ public class User {
 
     public void setInstance(User user) {
         instance = user;
+    }
+
+    public String toString(){
+        return id+ " " +name+ " " +email+ " " +password+ " " +age+ " " +height;
     }
 
 

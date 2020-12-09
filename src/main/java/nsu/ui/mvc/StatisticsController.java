@@ -58,12 +58,21 @@ public class StatisticsController {
 //	}
 
 	@RequestMapping("profile")
-	public ModelAndView profile(@ModelAttribute User user) {
+	public ModelAndView profile() {
 		User user1 = User.getInstance();
 		if (user1.getId() == null) {
 			return new ModelAndView("redirect:/login");
 		}
 		return new ModelAndView("stat/profile", "user", user1);
+	}
+
+	@RequestMapping("edit/{id}")
+	public ModelAndView createEditForm(@PathVariable("id") Statistics statistics) throws SQLException {
+		User user1 = User.getInstance();
+		if (user1.getId() == null) {
+			return new ModelAndView("redirect:/login");
+		}
+		return new ModelAndView("stat/edit", "statistics", statistics);
 	}
 
 //	@RequestMapping("/history")
@@ -74,7 +83,7 @@ public class StatisticsController {
 //	}
 
 	@RequestMapping("/history")
-	public ModelAndView history(@ModelAttribute User user) throws SQLException {
+	public ModelAndView history() throws SQLException {
 		User user_hist = User.getInstance();
 		if (user_hist.getId() == null) {
 			return new ModelAndView("redirect:/login");
@@ -85,10 +94,14 @@ public class StatisticsController {
 	}
 
 	@RequestMapping("/delete/{id}")
-	public String delete(@PathVariable(value = "id") long id) throws SQLException {
+	public ModelAndView delete(@PathVariable(value = "id") long id) throws SQLException {
 		System.out.println(id);
+		User user_hist = User.getInstance();
+		if (user_hist.getId() == null) {
+			return new ModelAndView("redirect:/login");
+		}
 		this.statisticsRepository.delete(id);
-		return "redirect:/history";
+		return new ModelAndView("redirect:/history");
 	}
 
 	@RequestMapping("{id}")
@@ -155,25 +168,41 @@ public class StatisticsController {
 			}
 			else {
 				// wrong password
-				return new ModelAndView("stat/login");
+				return new ModelAndView("redirect:/login");
 			}
 		}
 		// create a new user
-		return new ModelAndView("stat/profile", "user", user);
+		return new ModelAndView("redirect:/profile");
 	}
 
 
 	@RequestMapping(value = "/profile", method = RequestMethod.POST)
 	public ModelAndView create_user(@Valid User new_user, BindingResult result,
 									RedirectAttributes redirect) throws SQLException {
+		System.out.println(new_user);
+		User user=new User();
+		System.out.println(user);
 		if (result.hasErrors()) {
 			return new ModelAndView("stat/profile", "createErrors", result.getAllErrors());
 		}
-		User user = this.statisticsRepository.create_user(new_user);
-		user.setInstance(user);
+		this.statisticsRepository.create_user(new_user);
 
 		return new ModelAndView("redirect:/history");
 		//return history(new_user);
+	}
+
+	@RequestMapping(value = "/edit", method = RequestMethod.POST)
+	public ModelAndView createEdit(@Valid Statistics statistics, BindingResult result,
+								   RedirectAttributes redirect) throws SQLException {
+		if (result.hasErrors()) {
+			return new ModelAndView("stat/edit", "formErrors", result.getAllErrors());
+		}
+		ModelAndView mv = null;
+
+		this.statisticsRepository.editStatistics(statistics);
+
+		redirect.addFlashAttribute("globalStatistics", "Successfully edited the statistics");
+		return new ModelAndView("redirect:/history");
 	}
 
 	@RequestMapping("foo")
