@@ -63,7 +63,7 @@ public class BDRepository implements StatisticsRepository {
 			while (rs.next()) {
 				Statistics statistics = new Statistics();
 				statistics.setId(rs.getLong("id"));
-				statistics.setWeight(Float.toString(rs.getFloat("weight")));
+				statistics.setWeight(rs.getString("weight"));
 				statistics.setDate(rs.getString("date"));
 
 				sorted.put(LocalDate.parse(statistics.getDate(), formatter), statistics);
@@ -75,6 +75,7 @@ public class BDRepository implements StatisticsRepository {
 			}
 			for(int i = 1; i < stat.size(); i++){
 				Statistics temp = stat.get(i);
+				temp.setWeight(temp.getWeight().replace(",","."));
 				float delta = Float.parseFloat(temp.getWeight()) - Float.parseFloat(stat.get(i-1).getWeight());
 				String stringDelta =  (delta > 0) ? "+" + delta : Float.toString(delta);
 				temp.setDelta(stringDelta.substring(0, stringDelta.indexOf(".") + 2));
