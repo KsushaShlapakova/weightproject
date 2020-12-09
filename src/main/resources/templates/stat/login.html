@@ -27,14 +27,14 @@
             <div class="intro">
                 <div style="display: inline" class="log-input">
                     <label for="email">EMAIL:  </label>
-                    <input id = "email" type="email" class="input-data"
+                    <input id = "email" type="email" class="input-data" required="required"
                            th:field="*{email}"
                            th:class="${#fields.hasErrors('email')} ? 'field-error'"/>
                 </div>
 
                 <div style="display: inline" class="log-input">
                     <label for="password">ПАРОЛЬ: </label>
-                    <input id = "password" type="password" style="display: table-row"
+                    <input id = "password" type="password" style="display: table-row" required="required"
                            th:field="*{password}"
                            th:class="${#fields.hasErrors('password')} ? 'field-error'"/>
                 </div>

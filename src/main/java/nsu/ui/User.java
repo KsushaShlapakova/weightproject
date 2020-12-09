@@ -10,10 +10,8 @@ public class User {
 
     private static User instance;
 
-    @NotEmpty(message = "Email обязателен для заполнения.")
     private String email;
 
-    @NotEmpty(message = "Пароль обязателен для заполнения.")
     private String password;
 
     private String name;

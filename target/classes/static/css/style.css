@@ -125,16 +125,6 @@ label {
     color: green;
 }
 
-.alert-danger, .alert-error {
-    color: #b94a48;
-    background-color: #f2dede;
-    border-color: #eed3d7;
-    width: 30%;
-        text-align: center;
-        bottom: 5%;
-        right: 5%;
-}
-
 .header-login {
     position: relative;
     top:0;
@@ -208,6 +198,13 @@ position: absolute;
     left: 43%;
     top: 40%
     width: 50px;
+}
+
+.alert-danger, .alert-error {
+    color: #b94a48;
+    background-color: #f2dede;
+    border-color: #eed3d7;
+    text-align: left;
 }
 
 
