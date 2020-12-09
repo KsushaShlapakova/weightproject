@@ -51,6 +51,11 @@ public class StatisticsController {
 		return "stat/login";
 	}
 
+	@RequestMapping("login_wrong_password")
+	public String login_wrong_password(@ModelAttribute User user) {
+		return "stat/login_wrong_password";
+	}
+
 	// оставляю  на всякий случай старую версию
 //	@RequestMapping("profile")
 //	public String profile(@ModelAttribute User user) {
@@ -168,10 +173,15 @@ public class StatisticsController {
 			}
 			else {
 				// wrong password
-				return new ModelAndView("redirect:/login");
+				System.out.println("wrong password");
+//				return new ModelAndView("redirect:/login");
+				return new ModelAndView("redirect:/login_wrong_password");
 			}
 		}
 		// create a new user
+		System.out.println("create a new user");
+		user.setId((long) 0);
+		user.setInstance(user);
 		return new ModelAndView("redirect:/profile");
 	}
 
@@ -179,13 +189,16 @@ public class StatisticsController {
 	@RequestMapping(value = "/profile", method = RequestMethod.POST)
 	public ModelAndView create_user(@Valid User new_user, BindingResult result,
 									RedirectAttributes redirect) throws SQLException {
-		System.out.println(new_user);
-		User user=new User();
-		System.out.println(user);
+		System.out.println("email");
+		System.out.println(new_user.getEmail());
+//		System.out.println(new_user);
+//		User user=new User();
+//		System.out.println(user);
 		if (result.hasErrors()) {
 			return new ModelAndView("stat/profile", "createErrors", result.getAllErrors());
 		}
-		this.statisticsRepository.create_user(new_user);
+		new_user = this.statisticsRepository.create_user(new_user);
+		new_user.setInstance(new_user);
 
 		return new ModelAndView("redirect:/history");
 		//return history(new_user);

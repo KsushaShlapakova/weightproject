@@ -7,11 +7,10 @@
     <link rel="stylesheet"
           th:href="@{/css/bootstrap.min.css}"
           href="../../static/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href = "css/style.css"/>
+    <link rel="stylesheet" href = "/css/style.css"/>
 </head>
 <body>
-<div layout:fragment="content"
-     class="container">
+<div layout:fragment="content" class="container" id="container_profile">
     <h1 layout:fragment="header">ИЗМЕНИТЬ ДАННЫЕ</h1>
     <form id="statisticsCreate"
           th:action="@{/edit}"
@@ -25,37 +24,47 @@
                 Validation error
             </p>
         </div>
-        <div class = "inputs" style="display: table">
-            <div style="display: table-row">
-                <label for="id">ID</label>
-                <input id = "id" type="text" value="${statistics.getId()}"
-                       th:field="*{id}"
-                       th:class="${#fields.hasErrors('id')} ? 'field-error'" readonly="readonly"/>
-            </div>
-            <div style="display: table-row">
-                <label for="date">ДАТА:  </label>
-                <input id = "date" type="date" name="calendar" class="input-data" value="${statistics.date}"
-                       th:field="*{date}"
-                       th:class="${#fields.hasErrors('date')} ? 'field-error'"/>
+        <div class="profile-blog">
+
+            <div class = "inputs" style="display: table">
+
+                <div style="display: table-row">
+                    <label for="id">ID: </label>
+                    <input id = "id" type="text" style="display: table-row"
+                           value="${statistics.getId()}"
+                           th:field="*{id}"
+                           th:class="${#fields.hasErrors('id')} ? 'field-error'" readonly="readonly"/>
+                </div>
+<!--                class="input-data"-->
+
+                <div style="display: table-row">
+                    <label for="date">ДАТА:  </label>
+                    <input id = "date" type="date" style="display: table-row" name="calendar" class="input-data"
+                           value="${statistics.date}"
+                           th:field="*{date}"
+                           th:class="${#fields.hasErrors('date')} ? 'field-error'"/>
+                </div>
+
+                <div style="display: table-row">
+                    <label for="weight" id="label-weight">ВЕС: </label>
+                    <input id = "weight" type="text" style="display: table-row"
+                           value="${statistics.weight}"
+                           th:field="*{weight}"
+                           th:class="${#fields.hasErrors('weight')} ? 'field-error'"/>
+                <label for="weight">кг</label>
+                </div>
             </div>
 
-            <div style="display: table-row">
-                <label for="weight" id="label-weight">ВЕС: </label>
-                <input id = "weight" type="text" style="display: table-row" value="${statistics.weight}"
-                       th:field="*{weight}"
-                       th:class="${#fields.hasErrors('weight')} ? 'field-error'"/>
-                <label for="weight">кг</label>
+            <div class="form-actions" id="f">
+                <input type="submit" value="СОХРАНИТЬ" onclick="alert('Изменения успешно сохранены!');"/>
             </div>
 
         </div>
+    </form>
         <script>
             document.getElementById('date').max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
         </script>
 
-        <div class="form-actions" id="f">
-            <input type="submit" value="СОХРАНИТЬ"/>
-        </div>
-    </form>
 </div>
 </body>
 </html>

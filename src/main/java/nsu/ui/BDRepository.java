@@ -184,7 +184,7 @@ public class BDRepository implements StatisticsRepository {
 				String query_id = "select * from users where id = (select max(id) from users);";
 				ResultSet rs = st.executeQuery(query_id);
 				while (rs.next()) {
-					new_user.setId(rs.getLong(1));
+					new_user.setId(rs.getLong("id"));
 				}
 			}else{
 				System.out.println("AAAAA");
@@ -226,12 +226,12 @@ public class BDRepository implements StatisticsRepository {
 			String query = "select * from users where email='" + user.getEmail() + "';";
 			ResultSet rs = st.executeQuery(query);
 			while (rs.next()) {
-				user.setId(rs.getLong(1));
-				user.setEmail(rs.getString(2));
-				user.setPassword(rs.getString(3));
-				user.setName(rs.getString(4));
-				user.setAge(rs.getString(5));
-				user.setHeight(rs.getString(6));
+				user.setId(rs.getLong("id"));
+				user.setEmail(rs.getString("email"));
+				user.setPassword(rs.getString("password"));
+				user.setName(rs.getString("name"));
+				user.setAge(rs.getString("age"));
+				user.setHeight(rs.getString("height"));
 			}
 		}
 		catch (Exception e) {
@@ -251,9 +251,9 @@ public class BDRepository implements StatisticsRepository {
 			ResultSet rs = st.executeQuery("select * from statistics where id = "+ id +";");
 			Statistics statistics = new Statistics();
 			while (rs.next()) {
-				statistics.setId(rs.getLong(1));
-				statistics.setWeight(rs.getString(4));
-				statistics.setDate(rs.getString(3));
+				statistics.setId(rs.getLong("id"));
+				statistics.setWeight(rs.getString("weight"));
+				statistics.setDate(rs.getString("date"));
 			}
 			targetStatistics = statistics;
 		}finally {
