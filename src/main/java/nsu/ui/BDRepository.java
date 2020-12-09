@@ -93,12 +93,12 @@ public class BDRepository implements StatisticsRepository {
 	@Override
 	public Statistics save(Statistics stat, long user_id) throws SQLException {
 		Long id = null;
-		String dotWeight = null;
+		String dotWeight = stat.getWeight().replace(",", ".");
 		try {
 			startConnection();
 			String respond = null;
 
-			ResultSet rs = st.executeQuery("select id, date from statistics where date = '" + stat.getDate() + "';");
+			ResultSet rs = st.executeQuery("select id, date from statistics where date = '" + stat.getDate() + "' and user_id='"+user_id+"';");
 
 			while (rs.next()) {
 				respond = rs.getString("date");
@@ -106,7 +106,6 @@ public class BDRepository implements StatisticsRepository {
 			}
 
 			if (respond == null) {
-				dotWeight = stat.getWeight().replace(",", ".");
 				String queryStudent = "insert into statistics (user_id, date, weight)" +
 						" values (" + user_id + ", '" + stat.getDate() + "', '" + dotWeight + "');";
 
