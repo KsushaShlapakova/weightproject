@@ -168,17 +168,20 @@ public class StatisticsController {
 			}
 			else {
 				// wrong password
-				return new ModelAndView("stat/login");
+				return new ModelAndView("redirect:/login");
 			}
 		}
 		// create a new user
-		return new ModelAndView("stat/profile");
+		return new ModelAndView("redirect:/profile");
 	}
 
 
 	@RequestMapping(value = "/profile", method = RequestMethod.POST)
 	public ModelAndView create_user(@Valid User new_user, BindingResult result,
 									RedirectAttributes redirect) throws SQLException {
+		System.out.println(new_user);
+		User user=new User();
+		System.out.println(user);
 		if (result.hasErrors()) {
 			return new ModelAndView("stat/profile", "createErrors", result.getAllErrors());
 		}

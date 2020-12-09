@@ -27,6 +27,13 @@
             <div class = "inputs" style="display: table">
 
                 <div style="display: table-row">
+                    <input id = "id" type="hidden" style="display: table-row"
+                           value="${user.id}"
+                           th:field="*{id}"
+                           th:class="${#fields.hasErrors('id')} ? 'field-error'"/>
+                </div>
+
+                <div style="display: table-row">
                     <label for="email">EMAIL: </label>
                     <input id = "email" type="email" style="display: table-row" readonly="readonly"
                            value="${user.email}"

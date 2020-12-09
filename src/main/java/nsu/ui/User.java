@@ -81,5 +81,9 @@ public class User {
         instance = user;
     }
 
+    public String toString(){
+        return id+ " " +name+ " " +email+ " " +password+ " " +age+ " " +height;
+    }
+
 
 }
