@@ -75,6 +75,14 @@
             </div>
 
             <script>
+                var firstName=document.getElementById("name").value;
+                if (firstName!=="") {
+                localStorage.setItem("nameValue", firstName);
+                }
+            </script>
+
+
+            <script>
                 function passValues()
                 {
                     var firstName=document.getElementById("name").value;
@@ -83,8 +91,10 @@
                 }
             </script>
             <form action="layout.html">
+
             <div class="form-actions" id="profile-button">
                 <input type="submit" value="СОХРАНИТЬ" onclick="passValues();"/>
+
             </div>
             </form>
         </div>

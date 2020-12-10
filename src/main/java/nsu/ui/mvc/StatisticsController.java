@@ -169,7 +169,7 @@ public class StatisticsController {
 				this.statisticsRepository.user_set_params(user);
 				user.setInstance(user);
 				System.out.println("in login: " + user.getId());
-				return new ModelAndView("redirect:/history");
+				return new ModelAndView("redirect:/profile");
 			}
 			else {
 				// wrong password
