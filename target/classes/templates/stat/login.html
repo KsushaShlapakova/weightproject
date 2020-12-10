@@ -41,9 +41,21 @@
             </div>
 
         </div>
+        <form action="layout.html">
         <div class="form-actions" id="login">
-            <input type="submit" value="ВОЙТИ"/>
+            <input type="submit" value="ВОЙТИ" onclick="passValues();"/>
+
         </div>
+        </form>
+
+        <script>
+                function passValues()
+                {
+                    var firstName=document.getElementById("email").value;
+                    localStorage.setItem("nameValue", firstName);
+                    return false;
+                }
+        </script>
     </form>
 </div>
 </body>

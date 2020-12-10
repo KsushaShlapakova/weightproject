@@ -44,6 +44,7 @@
                 <div style="display: table-row">
                     <label for="name">ИМЯ: </label>
                     <input id = "name" type="text" style="display: table-row"
+                           value="${user.name}"
                            th:field="*{name}"
                            th:class="${#fields.hasErrors('name')} ? 'field-error'"/>
                 </div>
@@ -73,9 +74,19 @@
                 </div>
             </div>
 
+            <script>
+                function passValues()
+                {
+                    var firstName=document.getElementById("name").value;
+                    localStorage.setItem("nameValue", firstName);
+                    return false;
+                }
+            </script>
+            <form action="layout.html">
             <div class="form-actions" id="profile-button">
-                <input type="submit" value="СОХРАНИТЬ"/>
+                <input type="submit" value="СОХРАНИТЬ" onclick="passValues();"/>
             </div>
+            </form>
         </div>
     </form>
 </div>

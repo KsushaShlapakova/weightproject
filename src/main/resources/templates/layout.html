@@ -12,7 +12,9 @@
   <div class="navbar">
     <div class="menu-wrapper">
       <ul class="menu">
-        <li>ИМЯ...</li>
+<!--        th:insert="stat/profile :: name"-->
+
+        <li style="color:black;font-size:20px;font-family: Tahoma;" id="result">ИМЯ...</li>
         <li><a href="profile.html" th:href="@{/profile}">ПРОФИЛЬ</a>
         </li>
         <li><a href="history.html" th:href="@{/history}">ИСТОРИЯ</a>
@@ -25,6 +27,9 @@
   <div layout:fragment="content">
     Fake content
   </div>
+  <script>
+    document.getElementById("result").innerHTML=localStorage.getItem("nameValue");
+  </script>
 </div>
 </body>
 </html>
