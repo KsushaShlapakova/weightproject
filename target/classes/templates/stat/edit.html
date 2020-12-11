@@ -29,11 +29,10 @@
             <div class = "inputs" style="display: table">
 
                 <div style="display: table-row">
-                    <label for="id">ID: </label>
-                    <input id = "id" type="text" style="display: table-row"
+                    <input id = "id" type="hidden" style="display: table-row"
                            value="${statistics.getId()}"
                            th:field="*{id}"
-                           th:class="${#fields.hasErrors('id')} ? 'field-error'" readonly="readonly"/>
+                           th:class="${#fields.hasErrors('id')} ? 'field-error'"/>
                 </div>
 <!--                class="input-data"-->
 

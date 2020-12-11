@@ -35,6 +35,8 @@ public class Statistics {
     @Pattern(regexp = "^[+]?([0-9]*[.,])?[0-9]+$", message = "Данные введены некорректно.")
 	private String weight;
 
+	private boolean photo = false;
+
 	public Long getId() {
 		return this.id;
 	}
@@ -65,5 +67,13 @@ public class Statistics {
 
 	public void setDelta(String delta) {
 		this.delta = delta;
+	}
+
+	public boolean getPhoto() {
+		return this.photo;
+	}
+
+	public void setPhoto(boolean photo) {
+		this.photo = photo;
 	}
 }

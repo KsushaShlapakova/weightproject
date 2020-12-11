@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+<head>
+    <title>PHOTOPROGRESS</title>
+    <link rel="stylesheet"
+          th:href="@{/css/bootstrap.min.css}"
+          href="../../static/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href = "/css/style.css"/>
+</head>
+<body>
+<div layout:fragment="content" class="container">
+    <h1 layout:fragment="header">ФОТОПРОГРЕСС</h1>
+
+    <table style="border: 0px">
+        <thead>
+        <tr>
+            <td width="50%"></td>
+            <td width="50%"></td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <table style="border: 0px">
+                    <td>
+                        <input type="date" name="calendar" class="input-data"/>
+                    </td>
+                    <td>
+                        <div class="form-actions" id="f" style="display: table-row">
+                            <input type="submit" value="ОК"/>
+                        </div>
+                    </td>
+
+                </table>
+            </td>
+            <td>
+                <input type="date" name="calendar" class="input-data"/>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
