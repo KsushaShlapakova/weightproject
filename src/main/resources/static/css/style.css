@@ -208,4 +208,11 @@ position: absolute;
     width: 90%;
 }
 
+img {
+    padding: 30px; /* Ширина паспарту */
+    background: #f0f0f0; /* Цвет фона  паспарту */
+    border: 2px solid #666; /* Параметры рамки */
+    padding: auto;
+}
+
 

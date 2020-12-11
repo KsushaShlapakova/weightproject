@@ -48,6 +48,7 @@ public class StatisticsController {
 
 	@RequestMapping("login")
 	public String login(@ModelAttribute User user) {
+		user.setInstance(null);
 		return "stat/login";
 	}
 
@@ -69,6 +70,15 @@ public class StatisticsController {
 			return new ModelAndView("redirect:/login");
 		}
 		return new ModelAndView("stat/profile", "user", user1);
+	}
+
+	@RequestMapping("progress")
+	public ModelAndView progress() {
+		User user1 = User.getInstance();
+		if (user1.getId() == null) {
+			return new ModelAndView("redirect:/login");
+		}
+		return new ModelAndView("stat/progress", "user", user1);
 	}
 
 	@RequestMapping("edit/{id}")
@@ -200,7 +210,7 @@ public class StatisticsController {
 		new_user = this.statisticsRepository.create_user(new_user);
 		new_user.setInstance(new_user);
 
-		return new ModelAndView("redirect:/history");
+		return new ModelAndView("redirect:/profile");
 		//return history(new_user);
 	}
 
