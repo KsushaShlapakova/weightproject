@@ -74,11 +74,7 @@ public class StatisticsController {
 
 	@RequestMapping("progress")
 	public ModelAndView progress() {
-		User user1 = User.getInstance();
-		if (user1.getId() == null) {
-			return new ModelAndView("redirect:/login");
-		}
-		return new ModelAndView("stat/progress", "user", user1);
+		return new ModelAndView("stat/progress");
 	}
 
 	@RequestMapping("edit/{id}")
