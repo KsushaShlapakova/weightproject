@@ -15,6 +15,7 @@ package nsu.ui;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface StatisticsRepository {
 
@@ -34,5 +35,9 @@ public interface StatisticsRepository {
 	void user_set_params(User user) throws SQLException;
 
 	Statistics editStatistics(Statistics statistics) throws SQLException;
+
+	Statistics findStatisticsByDate(Long id, String date) throws SQLException;
+
+	HashMap<String, String> findPhotoDay(User user) throws SQLException;
 
 }

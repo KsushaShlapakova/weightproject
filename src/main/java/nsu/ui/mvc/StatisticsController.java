@@ -27,6 +27,7 @@ import nsu.ui.Statistics;
 import nsu.ui.StatisticsRepository;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 
 /**
  * @author Rob Winch
@@ -73,8 +74,15 @@ public class StatisticsController {
 	}
 
 	@RequestMapping("progress")
-	public ModelAndView progress() {
-		return new ModelAndView("stat/progress");
+	public ModelAndView progress(@ModelAttribute Statistics statistics) throws SQLException {
+		// передача ранней и поздней фотографии
+
+		User user = User.getInstance();
+		HashMap<String, String> photoDays = this.statisticsRepository.findPhotoDay(user);
+		if (user.getId() == null) {
+			return new ModelAndView("redirect:/login");
+		}
+		return new ModelAndView("stat/progress", "statistics", photoDays);
 	}
 
 	@RequestMapping("edit/{id}")
@@ -101,6 +109,9 @@ public class StatisticsController {
 		}
 		System.out.println("in history: " + user_hist.getId());
 		Iterable<Statistics> statistics = this.statisticsRepository.findAll(user_hist);
+//		for (Statistics statistic: statistics) {
+//			System.out.println(statistic.getPhoto());
+//		}
 		return new ModelAndView("stat/history", "statistics", statistics);
 	}
 
@@ -223,6 +234,18 @@ public class StatisticsController {
 		redirect.addFlashAttribute("globalStatistics", "Successfully edited the statistics");
 		return new ModelAndView("redirect:/history");
 	}
+
+//	@RequestMapping(value = "/progress", method = RequestMethod.POST)
+//	public ModelAndView showPhoto(@Valid Statistics statistics, BindingResult result,
+//								  RedirectAttributes redirect) throws SQLException {
+//		if (result.hasErrors()) {
+//			return new ModelAndView("stat/progress", "formErrors", result.getAllErrors());
+//		}
+//		User user = User.getInstance();
+//
+//		return new ModelAndView("redirect:/progress");
+//
+//	}
 
 	@RequestMapping("foo")
 	public String foo() {
