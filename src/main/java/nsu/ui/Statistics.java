@@ -13,6 +13,7 @@
 
 package nsu.ui;
 
+import java.sql.Blob;
 import java.util.Calendar;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -35,7 +36,8 @@ public class Statistics {
     @Pattern(regexp = "^[+]?([0-9]*[.,])?[0-9]+$", message = "Данные введены некорректно.")
 	private String weight;
 
-	private boolean photo = false;
+//	private boolean photo = false;
+	private String photo;
 
 	public Long getId() {
 		return this.id;
@@ -69,11 +71,11 @@ public class Statistics {
 		this.delta = delta;
 	}
 
-	public boolean getPhoto() {
+	public String getPhoto() {
 		return this.photo;
 	}
 
-	public void setPhoto(boolean photo) {
+	public void setPhoto(String photo) {
 		this.photo = photo;
 	}
 }

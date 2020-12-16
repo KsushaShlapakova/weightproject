@@ -17,10 +17,14 @@
 package nsu.ui;
 
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.TreeMap;
 
 public class BDRepository implements StatisticsRepository {
@@ -65,6 +69,7 @@ public class BDRepository implements StatisticsRepository {
 				statistics.setId(rs.getLong("id"));
 				statistics.setWeight(rs.getString("weight"));
 				statistics.setDate(rs.getString("date"));
+				statistics.setPhoto(rs.getString("photo"));
 
 				sorted.put(LocalDate.parse(statistics.getDate(), formatter), statistics);
 			}
@@ -107,26 +112,51 @@ public class BDRepository implements StatisticsRepository {
 			}
 
 			if (respond == null) {
-				String queryStudent = "insert into statistics (user_id, date, weight)" +
-						" values (" + user_id + ", '" + stat.getDate() + "', '" + dotWeight + "');";
+				// прописать если getPhoto=""
+				if (stat.getPhoto()!=null) {
+					String encodedString = "";
 
-				st.executeUpdate(queryStudent);
-				ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "' and user_id='"+user_id+"';");
-				while (potentialId.next()) {
-					id = potentialId.getLong("id");
+					// Впишите свой путь каталога, где хранятся фотки
+					File file = new File("/Users/sarantuaa/Downloads/wallpaper/"+stat.getPhoto());
+					FileInputStream imageInFile = new FileInputStream(file);
+					byte imageData[] = new byte[(int) file.length()];
+					imageInFile.read(imageData);
+					encodedString = Base64.getEncoder().encodeToString(imageData);
+					System.out.println(encodedString);
+
+					String queryStudent = "insert into statistics (user_id, date, weight, photo)" +
+							" values(?,?,?,?)";
+					PreparedStatement ps = con.prepareStatement(queryStudent);
+					ps.setLong(1, user_id);
+					ps.setString(2, stat.getDate());
+					ps.setString(3, dotWeight);
+					ps.setString(4, encodedString);
+					ps.executeUpdate();
+
+					st.executeUpdate(queryStudent);
+					ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "' and user_id='" + user_id + "';");
+					while (potentialId.next()) {
+						id = potentialId.getLong("id");
+					}
+
+					potentialId.close();
+
+					ps.close();
+
 				}
 
-				potentialId.close();
 			} else {
 
 				String queryStudent = "update statistics set weight ='" + dotWeight + "' where date = '" + stat.getDate() + "' and user_id='"+user_id+"';";
 				st.executeUpdate(queryStudent);
 
 			}
-
 			rs.close();
 
-		}finally {
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
 			closeAll();
 		}
 		stat.setId(id);
@@ -180,7 +210,7 @@ public class BDRepository implements StatisticsRepository {
 						" values ('" + new_user.getEmail() + "', '" + new_user.getPassword() + "', '" +
 						new_user.getName() + "', '" + new_user.getAge() + "', '" + new_user.getHeight() + "');";
 				st.executeUpdate(queryUser);
-//			String query_id = "select * from users where email='"+new_user.getEmail()+"';";
+
 				String query_id = "select * from users where id = (select max(id) from users);";
 				ResultSet rs = st.executeQuery(query_id);
 				while (rs.next()) {
@@ -278,4 +308,36 @@ public class BDRepository implements StatisticsRepository {
 		return statistics;
 	}
 
+	@Override
+	public Statistics findStatisticsByDate(Long id, String date) throws SQLException {
+		Statistics targetStatistics;
+		try{
+			startConnection();
+			ResultSet rs = st.executeQuery("select * from statistics where id = '"+ id +"' and date='"+date+"';");
+			Statistics statistics = new Statistics();
+			while (rs.next()) {
+				statistics.setId(rs.getLong("id"));
+				statistics.setWeight(rs.getString("weight"));
+				statistics.setDate(rs.getString("date"));
+				statistics.setPhoto(rs.getString("photo"));
+			}
+			targetStatistics = statistics;
+		}finally {
+			closeAll();
+		}
+
+		return targetStatistics;
+	}
+
+	@Override
+	public HashMap<String, String> findPhotoDay(User user) throws SQLException {
+		ArrayList<Statistics> statistics = findAll(user);
+		HashMap<String, String> photoDays = new HashMap<>();
+		for (Statistics statistic: statistics) {
+			if (!statistic.getPhoto().equals("")) {
+				photoDays.put(statistic.getDate(), statistic.getPhoto());
+			}
+		}
+		return photoDays;
+	}
 }
