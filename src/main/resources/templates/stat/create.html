@@ -42,6 +42,10 @@
       </div>
 
     </div>
+    <div class="photo-input">
+      <label for="photo">ФОТО: </label>
+      <input id = "photo" type="file" name="photo" accept="image/*,image/jpeg" style="display: table-row"/>
+    </div>
 
     <script>
        document.getElementById('date').max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];

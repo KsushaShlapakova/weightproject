@@ -40,32 +40,11 @@
                th:class="${#fields.hasErrors('weight')} ? 'field-error'"/>
         <label for="weight">кг</label>
       </div>
-        <div class="input__wrapper">
-          <input type="file" name="file" id="input__file" class="input input__file" accept="image/*,image/jpeg" style="visibility: hidden"/>
-          <label for="input__file" class="input__file-button">
-            <span class="input__file-button-text">Выберите файл: файл не выбран</span>
-          </label>
-        </div>
 
-      <script>
-    let inputs = document.querySelectorAll('.input__file');
-    Array.prototype.forEach.call(inputs, function (input) {
-      let label = input.nextElementSibling,
-        labelVal = label.querySelector('.input__file-button-text').innerText;
-
-      input.addEventListener('change', function (e) {
-        let countFiles = '';
-        if (this.files && this.files.length >= 1)
-          countFiles = this.files.length;
-
-        if (countFiles)
-          label.querySelector('.input__file-button-text').innerText = 'Файл выбран: ' + countFiles;
-        else
-          label.querySelector('.input__file-button-text').innerText = labelVal;
-      });
-    });
-    </script>
-
+    </div>
+    <div class="photo-input">
+      <label for="photo">ФОТО: </label>
+      <input id = "photo" type="file" name="photo" accept="image/*,image/jpeg" style="display: table-row"/>
     </div>
 
     <script>
