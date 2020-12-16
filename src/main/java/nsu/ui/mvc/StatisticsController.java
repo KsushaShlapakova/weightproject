@@ -23,11 +23,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import nsu.ui.PhotoDays;
 import nsu.ui.Statistics;
 import nsu.ui.StatisticsRepository;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Rob Winch
@@ -74,15 +76,18 @@ public class StatisticsController {
 	}
 
 	@RequestMapping("progress")
-	public ModelAndView progress(@ModelAttribute Statistics statistics) throws SQLException {
+	public ModelAndView progress(@ModelAttribute PhotoDays photoDays) throws SQLException {
 		// передача ранней и поздней фотографии
 
 		User user = User.getInstance();
-		HashMap<String, String> photoDays = this.statisticsRepository.findPhotoDay(user);
+		if (photoDays.getDate1() == null){
+			photoDays = this.statisticsRepository.findPhotoDay(user);
+		}
+
 		if (user.getId() == null) {
 			return new ModelAndView("redirect:/login");
 		}
-		return new ModelAndView("stat/progress", "statistics", photoDays);
+		return new ModelAndView("stat/progress", "photoDays", photoDays);
 	}
 
 	@RequestMapping("edit/{id}")
@@ -235,17 +240,19 @@ public class StatisticsController {
 		return new ModelAndView("redirect:/history");
 	}
 
-//	@RequestMapping(value = "/progress", method = RequestMethod.POST)
-//	public ModelAndView showPhoto(@Valid Statistics statistics, BindingResult result,
-//								  RedirectAttributes redirect) throws SQLException {
-//		if (result.hasErrors()) {
-//			return new ModelAndView("stat/progress", "formErrors", result.getAllErrors());
-//		}
-//		User user = User.getInstance();
-//
-//		return new ModelAndView("redirect:/progress");
-//
-//	}
+	@RequestMapping(value = "/progress", method = RequestMethod.POST)
+	public ModelAndView showPhoto(@Valid PhotoDays photoDays, BindingResult result,
+								  RedirectAttributes redirect) throws SQLException {
+		if (result.hasErrors()) {
+			return new ModelAndView("stat/progress", "formErrors", result.getAllErrors());
+		}
+		User user = User.getInstance();
+
+		PhotoDays pd = this.statisticsRepository.findPhoto(photoDays, user);
+
+		return new ModelAndView("redirect:/progress", "photoDays", pd);
+
+	}
 
 	@RequestMapping("foo")
 	public String foo() {

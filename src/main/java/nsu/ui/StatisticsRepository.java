@@ -38,6 +38,8 @@ public interface StatisticsRepository {
 
 	Statistics findStatisticsByDate(Long id, String date) throws SQLException;
 
-	HashMap<String, String> findPhotoDay(User user) throws SQLException;
+	PhotoDays findPhotoDay(User user) throws SQLException;
+
+	PhotoDays findPhoto(PhotoDays photoDays, User user) throws SQLException;
 
 }

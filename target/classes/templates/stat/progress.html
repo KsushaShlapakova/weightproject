@@ -12,7 +12,18 @@
 <body>
 <div layout:fragment="content" class="container">
     <h1 layout:fragment="header">ФОТОПРОГРЕСС</h1>
-
+    <form id="statisticsCreate"
+          th:action="@{/progress}"
+          th:object="${photoDays}"
+          action="#"
+          method="post">
+        <div th:if="${#fields.hasErrors('*')}"
+             class="alert alert-error">
+            <p th:each="error : ${#fields.errors('*')}"
+               th:text="${error}">
+                Validation error
+            </p>
+        </div>
     <table style="border: 0px">
         <thead>
         <tr>
@@ -25,18 +36,22 @@
             <td>
                 <table>
                     <td>
-                        <input type="date" name="calendar" class="input-data"/>
+                        <input type="date" name="calendar" class="input-data"
+                               value="${photoDays.date1}"
+                               th:field="*{date1}"/>
                     </td>
                     <td>
                         <div class="form-actions" id="f" style="display: table-row">
-                            <input type="submit" value="ОК"/>
+                            <input type="submit" value="ОК" onclick="showImage()"/>
                         </div>
                     </td>
 
                 </table>
             </td>
             <td>
-                <input type="date" name="calendar" class="input-data"/>
+                <input type="date" name="calendar" class="input-data"
+                       value="${photoDays.date2}"
+                       th:field="*{date2}"/>
             </td>
             <td>
                 <div class="form-actions" style="display: table-row">
@@ -48,17 +63,20 @@
             <table style="text-align: center">
                 <td height="250px" width="230px" style="border: 2px solid">
                     <text style="text-align: center">Фото не загружено</text>
+                    <img th:src="'data:image/jpeg;base64,'+${photoDays.photo1}" id="image" style="width:230px;height:250px;" alt="photo"/>
                 </td>
                 <td width="100px">
                 </td>
                 <td height="250px" style="border: 2px solid" width="230px">
                     <text style="text-align: center">Фото не загружено</text>
+                    <img th:src="'data:image/jpeg;base64,'+${photoDays.photo2}" id="image2" style="width:230px;height:250px;" alt="photo"/>
                 </td>
             </table>
         </tr>
 
         </tbody>
     </table>
+    </form>
 </div>
 </body>
 </html>

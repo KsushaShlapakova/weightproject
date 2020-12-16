@@ -20,12 +20,10 @@ package nsu.ui;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.TreeMap;
+import java.util.*;
 
 public class BDRepository implements StatisticsRepository {
 
@@ -113,11 +111,31 @@ public class BDRepository implements StatisticsRepository {
 
 			if (respond == null) {
 				// прописать если getPhoto=""
-				if (stat.getPhoto()!=null) {
+				if (stat.getPhoto().equals("")){
+					String queryStudent = "insert into statistics (user_id, date, weight, photo)" +
+							" values(?,?,?,?)";
+					PreparedStatement ps = con.prepareStatement(queryStudent);
+					ps.setLong(1, user_id);
+					ps.setString(2, stat.getDate());
+					ps.setString(3, dotWeight);
+					ps.setString(4, stat.getPhoto());
+					ps.executeUpdate();
+
+					st.executeUpdate(queryStudent);
+					ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "' and user_id='" + user_id + "';");
+					while (potentialId.next()) {
+						id = potentialId.getLong("id");
+					}
+
+					potentialId.close();
+
+					ps.close();
+				}
+				else {
 					String encodedString = "";
 
 					// Впишите свой путь каталога, где хранятся фотки
-					File file = new File("/Users/sarantuaa/Downloads/wallpaper/"+stat.getPhoto());
+					File file = new File("/Users/Ksusha/Desktop/вынос мозга/шшш/смайл/"+stat.getPhoto());
 					FileInputStream imageInFile = new FileInputStream(file);
 					byte imageData[] = new byte[(int) file.length()];
 					imageInFile.read(imageData);
@@ -330,14 +348,51 @@ public class BDRepository implements StatisticsRepository {
 	}
 
 	@Override
-	public HashMap<String, String> findPhotoDay(User user) throws SQLException {
+	public PhotoDays findPhotoDay(User user) throws SQLException {
+		PhotoDays pd = new PhotoDays();
 		ArrayList<Statistics> statistics = findAll(user);
-		HashMap<String, String> photoDays = new HashMap<>();
+		LinkedHashMap<String, String> photoDays = new LinkedHashMap<>();
 		for (Statistics statistic: statistics) {
 			if (!statistic.getPhoto().equals("")) {
 				photoDays.put(statistic.getDate(), statistic.getPhoto());
 			}
 		}
-		return photoDays;
+		//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-dd-MM");
+		if (photoDays.isEmpty()){
+			LocalDate date = LocalDate.now();
+			pd.setDate1(String.valueOf(date));
+			pd.setDate2(String.valueOf(date));
+			pd.setPhoto1("");
+			pd.setPhoto2("");
+		}
+		pd.setDate1((String) photoDays.keySet().toArray()[0]);
+		pd.setDate2((String) photoDays.keySet().toArray()[photoDays.keySet().size()-1]);
+		pd.setPhoto1(photoDays.get(pd.getDate1()));
+		pd.setPhoto2(photoDays.get(pd.getDate2()));
+		return pd;
+	}
+
+	@Override
+	public PhotoDays findPhoto(PhotoDays photoDays, User user) throws SQLException {
+		PhotoDays pd = new PhotoDays();
+		try{
+			startConnection();
+			ResultSet rs = st.executeQuery("select photo from statistics where date = "+ photoDays.getDate1() +
+					" and user_id = " + user.getId()+";");
+
+			while (rs.next()) {
+				pd.setPhoto1(rs.getString("photo"));
+			}
+
+
+			rs = st.executeQuery("select photo from statistics where date = "+ photoDays.getDate2() +
+					" and user_id = " + user.getId()+";");
+			while (rs.next()) {
+				pd.setPhoto2(rs.getString("photo"));
+			}
+		}finally {
+			closeAll();
+		}
+		return pd;
 	}
 }
