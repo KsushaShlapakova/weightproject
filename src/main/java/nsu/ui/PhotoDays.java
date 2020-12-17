@@ -5,10 +5,19 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 public class PhotoDays {
+    private static PhotoDays instance;
     private String date1;
     private String photo1;
     private String date2;
     private String photo2;
+
+    public static synchronized PhotoDays getInstance() {
+        if (instance == null) {
+            System.out.println("instance = 0");
+            instance = new PhotoDays();
+        }
+        return instance;
+    }
 
     public String getDate1() {
         return this.date1;
@@ -38,6 +47,10 @@ public class PhotoDays {
 
     public void setPhoto2(String photo2) {
         this.photo2 = photo2;
+    }
+
+    public void setInstance(PhotoDays photoDays) {
+        instance = photoDays;
     }
 
 

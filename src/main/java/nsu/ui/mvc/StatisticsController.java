@@ -28,8 +28,6 @@ import nsu.ui.Statistics;
 import nsu.ui.StatisticsRepository;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Rob Winch
@@ -52,6 +50,8 @@ public class StatisticsController {
 	@RequestMapping("login")
 	public String login(@ModelAttribute User user) {
 		user.setInstance(null);
+		PhotoDays pd = new PhotoDays();
+		pd.setInstance(null);
 		return "stat/login";
 	}
 
@@ -74,25 +74,30 @@ public class StatisticsController {
 		}
 		return new ModelAndView("stat/profile", "user", user1);
 	}
+//	@ModelAttribute PhotoDays photoDays
 
 	@RequestMapping("progress")
-	public ModelAndView progress(@ModelAttribute PhotoDays photoDays) throws SQLException {
+	public ModelAndView progress() throws SQLException {
 		// передача ранней и поздней фотографии
 
 		User user = User.getInstance();
-		if (photoDays.getDate1() == null){
-			photoDays = this.statisticsRepository.findPhotoDay(user);
-		}
-
+		PhotoDays pd = PhotoDays.getInstance();
 		if (user.getId() == null) {
 			return new ModelAndView("redirect:/login");
 		}
-		return new ModelAndView("stat/progress", "photoDays", photoDays);
+		if (pd.getDate1() == null){
+			pd = this.statisticsRepository.findPhotoDay(user);
+		}
+		System.out.println(pd.getDate1());
+
+		return new ModelAndView("stat/progress", "photoDays", pd);
 	}
 
 	@RequestMapping("edit/{id}")
 	public ModelAndView createEditForm(@PathVariable("id") Statistics statistics) throws SQLException {
 		User user1 = User.getInstance();
+		System.out.println("Фотка есть или че "+statistics.getPhoto());
+		System.out.println("Фотка есть или че "+statistics.getPhotoName());
 		if (user1.getId() == null) {
 			return new ModelAndView("redirect:/login");
 		}
@@ -247,10 +252,16 @@ public class StatisticsController {
 			return new ModelAndView("stat/progress", "formErrors", result.getAllErrors());
 		}
 		User user = User.getInstance();
+		System.out.println(photoDays.getDate1());
+		System.out.println(photoDays.getDate2());
 
-		PhotoDays pd = this.statisticsRepository.findPhoto(photoDays, user);
 
-		return new ModelAndView("redirect:/progress", "photoDays", pd);
+		photoDays = this.statisticsRepository.findPhoto(photoDays, user);
+		photoDays.setInstance(photoDays);
+		System.out.println(photoDays.getPhoto1());
+		System.out.println(photoDays.getPhoto2());
+
+		return new ModelAndView("redirect:/progress");
 
 	}
 

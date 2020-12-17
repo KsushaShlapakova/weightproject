@@ -32,7 +32,7 @@ public class BDRepository implements StatisticsRepository {
 
 	public static final String url = "jdbc:mysql://localhost:3306/weightdetector?useSSL=false";
 	public static final String user = "root";
-	public static final String pwd = "";
+	public static final String pwd = "root1965";
 
 
 	public void startConnection(){
@@ -68,6 +68,7 @@ public class BDRepository implements StatisticsRepository {
 				statistics.setWeight(rs.getString("weight"));
 				statistics.setDate(rs.getString("date"));
 				statistics.setPhoto(rs.getString("photo"));
+				statistics.setPhotoName(rs.getString("photo_name"));
 
 				sorted.put(LocalDate.parse(statistics.getDate(), formatter), statistics);
 			}
@@ -135,20 +136,20 @@ public class BDRepository implements StatisticsRepository {
 					String encodedString = "";
 
 					// Впишите свой путь каталога, где хранятся фотки
-					File file = new File("/Users/Ksusha/Desktop/вынос мозга/шшш/смайл/"+stat.getPhoto());
+					File file = new File("/Users/sarantuaa/Downloads/wallpaper/"+stat.getPhoto());
 					FileInputStream imageInFile = new FileInputStream(file);
 					byte imageData[] = new byte[(int) file.length()];
 					imageInFile.read(imageData);
 					encodedString = Base64.getEncoder().encodeToString(imageData);
-					System.out.println(encodedString);
 
-					String queryStudent = "insert into statistics (user_id, date, weight, photo)" +
-							" values(?,?,?,?)";
+					String queryStudent = "insert into statistics (user_id, date, weight, photo, photo_name)" +
+							" values(?,?,?,?,?)";
 					PreparedStatement ps = con.prepareStatement(queryStudent);
 					ps.setLong(1, user_id);
 					ps.setString(2, stat.getDate());
 					ps.setString(3, dotWeight);
 					ps.setString(4, encodedString);
+					ps.setString(5,stat.getPhoto());
 					ps.executeUpdate();
 
 					st.executeUpdate(queryStudent);
@@ -165,8 +166,22 @@ public class BDRepository implements StatisticsRepository {
 
 			} else {
 
-				String queryStudent = "update statistics set weight ='" + dotWeight + "' where date = '" + stat.getDate() + "' and user_id='"+user_id+"';";
-				st.executeUpdate(queryStudent);
+				if (stat.getPhoto().equals("")){
+					String queryStudent = "update statistics set weight ='" + dotWeight + "', photo='"+stat.getPhoto()+"' where date = '" + stat.getDate() + "' and user_id='"+user_id+"';";
+					st.executeUpdate(queryStudent);
+				} else {
+					String encodedString = "";
+
+					// Впишите свой путь каталога, где хранятся фотки
+					File file = new File("/Users/sarantuaa/Downloads/wallpaper/"+stat.getPhoto());
+					FileInputStream imageInFile = new FileInputStream(file);
+					byte imageData[] = new byte[(int) file.length()];
+					imageInFile.read(imageData);
+					encodedString = Base64.getEncoder().encodeToString(imageData);
+
+					String queryStudent = "update statistics set weight ='" + dotWeight + "', photo='"+encodedString+"', photo_name='"+stat.getPhoto()+"' where date = '" + stat.getDate() + "' and user_id='" + user_id + "';";
+					st.executeUpdate(queryStudent);
+				}
 
 			}
 			rs.close();
@@ -302,6 +317,8 @@ public class BDRepository implements StatisticsRepository {
 				statistics.setId(rs.getLong("id"));
 				statistics.setWeight(rs.getString("weight"));
 				statistics.setDate(rs.getString("date"));
+				statistics.setPhoto(rs.getString("photo"));
+				statistics.setPhotoName(rs.getString("photo_name"));
 			}
 			targetStatistics = statistics;
 		}finally {
@@ -316,11 +333,31 @@ public class BDRepository implements StatisticsRepository {
 		try{
 			startConnection();
 
-			String query = "UPDATE statistics SET date = '" + statistics.getDate() + "', weight = '" + statistics.getWeight() +
-					"' WHERE id = " + statistics.getId() + ";";
-			st.executeUpdate(query);
+			if (statistics.getPhoto().equals("")) {
 
-		}finally {
+				String query = "UPDATE statistics SET date = '" + statistics.getDate() + "', weight = '" + statistics.getWeight() +
+						"', photo='"+statistics.getPhoto()+"', photo_name='"+statistics.getPhoto()+"' WHERE id = " + statistics.getId() + ";";
+				st.executeUpdate(query);
+			} else {
+				String encodedString = "";
+
+				// Впишите свой путь каталога, где хранятся фотки
+				File file = new File("/Users/sarantuaa/Downloads/wallpaper/"+statistics.getPhoto());
+				FileInputStream imageInFile = new FileInputStream(file);
+				byte imageData[] = new byte[(int) file.length()];
+				imageInFile.read(imageData);
+				encodedString = Base64.getEncoder().encodeToString(imageData);
+
+				String query = "UPDATE statistics SET date = '" + statistics.getDate() + "', weight = '" + statistics.getWeight() +
+						"', photo='"+encodedString+"', photo_name='"+statistics.getPhoto()+"' WHERE id = " + statistics.getId() + ";";
+				st.executeUpdate(query);
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
 			closeAll();
 		}
 		return statistics;
@@ -357,13 +394,14 @@ public class BDRepository implements StatisticsRepository {
 				photoDays.put(statistic.getDate(), statistic.getPhoto());
 			}
 		}
-		//SimpleDateFormat formatter = new SimpleDateFormat("yyyy-dd-MM");
+
 		if (photoDays.isEmpty()){
 			LocalDate date = LocalDate.now();
 			pd.setDate1(String.valueOf(date));
 			pd.setDate2(String.valueOf(date));
-			pd.setPhoto1("");
-			pd.setPhoto2("");
+			pd.setPhoto1(null);
+			pd.setPhoto2(null);
+			return pd;
 		}
 		pd.setDate1((String) photoDays.keySet().toArray()[0]);
 		pd.setDate2((String) photoDays.keySet().toArray()[photoDays.keySet().size()-1]);
@@ -377,19 +415,20 @@ public class BDRepository implements StatisticsRepository {
 		PhotoDays pd = new PhotoDays();
 		try{
 			startConnection();
-			ResultSet rs = st.executeQuery("select photo from statistics where date = "+ photoDays.getDate1() +
-					" and user_id = " + user.getId()+";");
+			ResultSet rs = st.executeQuery("select photo from statistics where date='"+ photoDays.getDate1() + "' and user_id = '" + user.getId()+"';");
 
 			while (rs.next()) {
 				pd.setPhoto1(rs.getString("photo"));
 			}
 
 
-			rs = st.executeQuery("select photo from statistics where date = "+ photoDays.getDate2() +
-					" and user_id = " + user.getId()+";");
+			rs = st.executeQuery("select photo from statistics where date='"+ photoDays.getDate2() + "' and user_id ='" + user.getId()+"';");
 			while (rs.next()) {
 				pd.setPhoto2(rs.getString("photo"));
 			}
+
+			pd.setDate1(photoDays.getDate1());
+			pd.setDate2(photoDays.getDate2());
 		}finally {
 			closeAll();
 		}

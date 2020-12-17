@@ -36,7 +36,7 @@
             <td>
                 <table>
                     <td>
-                        <input type="date" name="calendar" class="input-data"
+                        <input type="date" name="calendar" class="input-data" id="date1"
                                value="${photoDays.date1}"
                                th:field="*{date1}"/>
                     </td>
@@ -49,7 +49,7 @@
                 </table>
             </td>
             <td>
-                <input type="date" name="calendar" class="input-data"
+                <input type="date" name="calendar" class="input-data" id="date2"
                        value="${photoDays.date2}"
                        th:field="*{date2}"/>
             </td>
@@ -62,14 +62,18 @@
         <tr>
             <table style="text-align: center">
                 <td height="250px" width="230px" style="border: 2px solid">
-                    <text style="text-align: center">Фото не загружено</text>
-                    <img th:src="'data:image/jpeg;base64,'+${photoDays.photo1}" id="image" style="width:230px;height:250px;" alt="photo"/>
+<!--                    <text style="text-align: center">Фото не загружено</text>-->
+<!--                    <img th:if="${photoDays.photo1==null}" id="no-image" style="width:230px;height:250px;"/>-->
+                    <span th:if="${photoDays.photo1==null || photoDays.photo1==''}">Фото не загружено</span>
+                    <img th:unless="${photoDays.photo1==null || photoDays.photo1==''}" th:src="'data:image/jpeg;base64,'+${photoDays.photo1}" id="image" style="width:230px;height:250px;" alt="photo"/>
                 </td>
                 <td width="100px">
                 </td>
                 <td height="250px" style="border: 2px solid" width="230px">
-                    <text style="text-align: center">Фото не загружено</text>
-                    <img th:src="'data:image/jpeg;base64,'+${photoDays.photo2}" id="image2" style="width:230px;height:250px;" alt="photo"/>
+<!--                    <text style="text-align: center">Фото не загружено</text>-->
+<!--                    <img th:if="${photoDays.photo2==null}" id="no-image2" style="width:230px;height:250px;"/>-->
+                    <span th:if="${photoDays.photo2==null || photoDays.photo2==''}">Фото не загружено</span>
+                    <img th:unless="${photoDays.photo2==null || photoDays.photo2==''}" th:src="'data:image/jpeg;base64,'+${photoDays.photo2}" id="image2" style="width:230px;height:250px;" alt="photo"/>
                 </td>
             </table>
         </tr>
@@ -77,6 +81,10 @@
         </tbody>
     </table>
     </form>
+    <script>
+            document.getElementById('date1').max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+            document.getElementById('date2').max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+    </script>
 </div>
 </body>
 </html>

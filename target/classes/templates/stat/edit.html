@@ -53,6 +53,15 @@
                 <label for="weight">кг</label>
                 </div>
             </div>
+            <div class="photo-input">
+                <input id = "photo" type="file" value="${statistics.photoName}" accept="image/*,image/jpeg" style="display: table-row"
+                       th:field="*{photo}"
+                       th:class="${#fields.hasErrors('weight')} ? 'field-error'"
+                />
+                <label for="photo" class="photo-input-button"></label>
+            </div>
+            <div th:if="${statistics.photo==''}" id="file-upload-name1">Фото не загружено</div>
+            <div th:unless="${statistics.photo==''}" id="file-upload-name2">Фото загружено</div>
 
             <div class="form-actions" id="f">
                 <input type="submit" value="СОХРАНИТЬ" onclick="alert('Изменения успешно сохранены!');"/>
@@ -62,6 +71,21 @@
     </form>
         <script>
             document.getElementById('date').max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+
+            var input = document.getElementById("photo");
+            var infoArea1 = document.getElementById("file-upload-name1");
+            var infoArea2 = document.getElementById("file-upload-name2");
+
+            input.addEventListener('change', showFileName);
+
+            function showFileName(event) {
+            var input = event.srcElement;
+
+            var fileName = input.value;
+
+            infoArea1.textContent = 'Фото загружено: ' + fileName;
+            infoArea2.textContent = 'Фото загружено: ' + fileName;
+            }
         </script>
 
 </div>

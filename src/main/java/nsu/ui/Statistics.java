@@ -39,6 +39,8 @@ public class Statistics {
 //	private boolean photo = false;
 	private String photo;
 
+	private String photoName;
+
 	public Long getId() {
 		return this.id;
 	}
@@ -77,5 +79,13 @@ public class Statistics {
 
 	public void setPhoto(String photo) {
 		this.photo = photo;
+	}
+
+	public String getPhotoName() {
+		return photoName;
+	}
+
+	public void setPhotoName(String photoName) {
+		this.photoName = photoName;
 	}
 }
