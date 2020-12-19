@@ -16,6 +16,7 @@ package nsu.ui;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public interface StatisticsRepository {
 
@@ -42,4 +43,5 @@ public interface StatisticsRepository {
 
 	PhotoDays findPhoto(PhotoDays photoDays, User user) throws SQLException;
 
+	ArrayList<Object[]> dynamics(User user) throws SQLException;
 }
