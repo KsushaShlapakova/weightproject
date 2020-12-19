@@ -12,19 +12,30 @@
   <div class="navbar">
     <div class="menu-wrapper">
       <ul class="menu">
-        <li>ИМЯ...</li>
-        <li><a href="history.html" th:href="@{/profile}">ПРОФИЛЬ</a>
+<!--        th:insert="stat/profile :: name"-->
+
+        <li style="color:black;font-size:20px;font-family: Tahoma;" id="result">ИМЯ...</li>
+        <li><a href="profile.html" th:href="@{/profile}">ПРОФИЛЬ</a>
         </li>
         <li><a href="history.html" th:href="@{/history}">ИСТОРИЯ</a>
         </li>
         <li><a href="create.html" th:href="@{/create}">ЗАПИСАТЬ ДАННЫЕ</a>
         </li>
+          <li><a href="statistics.html" th:href="@{/statistics}">СТАТИСТИКА</a>
+          </li>
+          <li><a href="progress.html" th:href="@{/progress}">ФОТОПРОГРЕСС</a>
+          </li>
+          <li><a href="login.html" th:href="@{/login}">ВЫЙТИ</a>
+          </li>
       </ul>
     </div>
   </div>
   <div layout:fragment="content">
     Fake content
   </div>
+  <script>
+    document.getElementById("result").innerHTML=localStorage.getItem("nameValue");
+  </script>
 </div>
 </body>
 </html>

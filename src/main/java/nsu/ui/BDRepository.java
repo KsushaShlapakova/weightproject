@@ -17,11 +17,13 @@
 package nsu.ui;
 
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.*;
 
 public class BDRepository implements StatisticsRepository {
 
@@ -49,54 +51,59 @@ public class BDRepository implements StatisticsRepository {
 	}
 
 	@Override
+	public ArrayList<Statistics> findAll(User user) throws SQLException {
 
-	public ArrayList<Statistics> findAll() throws SQLException {
 		ArrayList<Statistics> stat = new ArrayList<Statistics>();
 		TreeMap<LocalDate, Statistics> sorted = new TreeMap<>();
-		try{
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+		try {
 			startConnection();
 
-			ResultSet rs = st.executeQuery("select * from statistics;");
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			ResultSet rs = st.executeQuery("select * from statistics where user_id='" + user.getId()+"';");
 
 			while (rs.next()) {
 				Statistics statistics = new Statistics();
-				statistics.setId(rs.getLong(1));
-				statistics.setWeight(Float.toString(rs.getFloat(3)));
-				statistics.setDate(rs.getString(2));
+				statistics.setId(rs.getLong("id"));
+				statistics.setWeight(rs.getString("weight"));
+				statistics.setDate(rs.getString("date"));
+				statistics.setPhoto(rs.getString("photo"));
+				statistics.setPhotoName(rs.getString("photo_name"));
 
 				sorted.put(LocalDate.parse(statistics.getDate(), formatter), statistics);
 			}
+
 			stat = new ArrayList<>(sorted.values());
-			stat.get(0).setDelta("0.0");
+			if (stat.size() != 0) {
+				stat.get(0).setDelta("0.0");
+			}
 			for(int i = 1; i < stat.size(); i++){
 				Statistics temp = stat.get(i);
+				temp.setWeight(temp.getWeight().replace(",","."));
 				float delta = Float.parseFloat(temp.getWeight()) - Float.parseFloat(stat.get(i-1).getWeight());
 				String stringDelta =  (delta > 0) ? "+" + delta : Float.toString(delta);
 				temp.setDelta(stringDelta.substring(0, stringDelta.indexOf(".") + 2));
 			}
 
 			rs.close();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			closeAll();
 		}
-
 		return stat;
 	}
 
 
 	@Override
-	public Statistics save(Statistics stat) throws SQLException {
+	public Statistics save(Statistics stat, long user_id) throws SQLException {
 		Long id = null;
-		String dotWeight = null;
+		String dotWeight = stat.getWeight().replace(",", ".");
 		try {
 			startConnection();
 			String respond = null;
 
-			ResultSet rs = st.executeQuery("select id, date from statistics where date = '" + stat.getDate() + "';");
+			ResultSet rs = st.executeQuery("select id, date from statistics where date = '" + stat.getDate() + "' and user_id='"+user_id+"';");
 
 			while (rs.next()) {
 				respond = rs.getString("date");
@@ -104,27 +111,85 @@ public class BDRepository implements StatisticsRepository {
 			}
 
 			if (respond == null) {
-				dotWeight = stat.getWeight().replace(",", ".");
-				String queryStudent = "insert into statistics (date, weight)" +
-						" values ('" + stat.getDate() + "', '" + dotWeight + "');";
+				// прописать если getPhoto=""
+				if (stat.getPhoto() == null){
+					String queryStudent = "insert into statistics (user_id, date, weight, photo)" +
+							" values(?,?,?,?)";
+					PreparedStatement ps = con.prepareStatement(queryStudent);
+					ps.setLong(1, user_id);
+					ps.setString(2, stat.getDate());
+					ps.setString(3, dotWeight);
+					ps.setString(4, stat.getPhoto());
+					ps.executeUpdate();
 
-				st.executeUpdate(queryStudent);
-				ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "';");
-				while (potentialId.next()) {
-					id = potentialId.getLong(1);
+					st.executeUpdate(queryStudent);
+					ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "' and user_id='" + user_id + "';");
+					while (potentialId.next()) {
+						id = potentialId.getLong("id");
+					}
+
+					potentialId.close();
+
+					ps.close();
+				}
+				else {
+					String encodedString = "";
+
+					// Впишите свой путь каталога, где хранятся фотки
+					File file = new File("/Users/sarantuaa/Downloads/wallpaper/"+stat.getPhoto());
+					FileInputStream imageInFile = new FileInputStream(file);
+					byte imageData[] = new byte[(int) file.length()];
+					imageInFile.read(imageData);
+					encodedString = Base64.getEncoder().encodeToString(imageData);
+
+					String queryStudent = "insert into statistics (user_id, date, weight, photo, photo_name)" +
+							" values(?,?,?,?,?)";
+					PreparedStatement ps = con.prepareStatement(queryStudent);
+					ps.setLong(1, user_id);
+					ps.setString(2, stat.getDate());
+					ps.setString(3, dotWeight);
+					ps.setString(4, encodedString);
+					ps.setString(5,stat.getPhoto());
+					ps.executeUpdate();
+
+					st.executeUpdate(queryStudent);
+					ResultSet potentialId = st.executeQuery("select id from statistics where weight = '" + stat.getWeight() + "'and date= '" + stat.getDate() + "' and user_id='" + user_id + "';");
+					while (potentialId.next()) {
+						id = potentialId.getLong("id");
+					}
+
+					potentialId.close();
+
+					ps.close();
+
 				}
 
-				potentialId.close();
 			} else {
 
-				String queryStudent = "update statistics set weight ='" + dotWeight + "' where date = '" + stat.getDate() + "';";
-				st.executeUpdate(queryStudent);
+				if (stat.getPhoto().equals("")){
+					String queryStudent = "update statistics set weight ='" + dotWeight + "', photo='"+stat.getPhoto()+"' where date = '" + stat.getDate() + "' and user_id='"+user_id+"';";
+					st.executeUpdate(queryStudent);
+				} else {
+					String encodedString = "";
+
+					// Впишите свой путь каталога, где хранятся фотки
+					File file = new File("C:/Users/Ksusha/Desktop/вынос мозга/шшш/смайл"+stat.getPhoto());
+					FileInputStream imageInFile = new FileInputStream(file);
+					byte imageData[] = new byte[(int) file.length()];
+					imageInFile.read(imageData);
+					encodedString = Base64.getEncoder().encodeToString(imageData);
+
+					String queryStudent = "update statistics set weight ='" + dotWeight + "', photo='"+encodedString+"', photo_name='"+stat.getPhoto()+"' where date = '" + stat.getDate() + "' and user_id='" + user_id + "';";
+					st.executeUpdate(queryStudent);
+				}
 
 			}
-
 			rs.close();
 
-		}finally {
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
 			closeAll();
 		}
 		stat.setId(id);
@@ -132,9 +197,267 @@ public class BDRepository implements StatisticsRepository {
 		return stat;
 	}
 
+
 	@Override
-	public Statistics findStatistics(Long id) {
-		return null;
+	public void delete(Long id) throws SQLException {
+		try {
+			startConnection();
+
+			String query = "delete from statistics where id = '" + id + "';";
+			st.executeUpdate(query);
+
+		} finally {
+			closeAll();
+		}
 	}
 
+	@Override
+	public boolean[] check_user(String email, String password) throws SQLException {
+		boolean[] result = {false, false};
+		try {
+			startConnection();
+			ResultSet rs = st.executeQuery("select * from users where email = '" + email + "';");
+			while (rs.next()) {
+				result[0] = true;
+				String pass = rs.getString("password");
+				if (pass.equals(password)) {
+					result[1] = true;
+				}
+			}
+			rs.close();
+		}
+		catch (Exception e) { e.printStackTrace(); }
+		finally { closeAll(); }
+		return result;
+	}
+
+	@Override
+	public User create_user(User new_user) throws SQLException {
+		System.out.println(new_user.getName());
+		System.out.println(new_user.getId());
+		try {
+			startConnection();
+			boolean userExistence = checkDB(new_user);
+			if (!userExistence) {
+				String queryUser = "insert into users (email, password, name, age, height)" +
+						" values ('" + new_user.getEmail() + "', '" + new_user.getPassword() + "', '" +
+						new_user.getName() + "', '" + new_user.getAge() + "', '" + new_user.getHeight() + "');";
+				st.executeUpdate(queryUser);
+
+				String query_id = "select * from users where id = (select max(id) from users);";
+				ResultSet rs = st.executeQuery(query_id);
+				while (rs.next()) {
+					new_user.setId(rs.getLong("id"));
+				}
+			}else{
+				System.out.println("AAAAA");
+				String query = "UPDATE users SET name = '" + new_user.getName() +"', password = '" + new_user.getPassword() +
+						"', age = '" + new_user.getAge() +
+						"', height = '" + new_user.getHeight() +
+						"' WHERE id = " + new_user.getId() + ";";
+				st.executeUpdate(query);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			closeAll();
+		}
+		return new_user;
+	}
+
+	public boolean checkDB(User user) throws SQLException {
+		String queryCheck = "SELECT EXISTS(SELECT id FROM users WHERE email = '"+ user.getEmail() + "');";
+		ResultSet rs = st.executeQuery(queryCheck);
+
+		while (rs.next()){
+			if (rs.getString(1).equals("0")){
+				rs.close();
+				return false;
+			}
+		}
+		rs.close();
+		return true;
+	}
+
+	@Override
+	public void user_set_params(User user) throws SQLException {
+		try {
+			System.out.println("get email in set_params: " + user.getEmail());
+			startConnection();
+			String query = "select * from users where email='" + user.getEmail() + "';";
+			ResultSet rs = st.executeQuery(query);
+			while (rs.next()) {
+				user.setId(rs.getLong("id"));
+				user.setEmail(rs.getString("email"));
+				user.setPassword(rs.getString("password"));
+				user.setName(rs.getString("name"));
+				user.setAge(rs.getString("age"));
+				user.setHeight(rs.getString("height"));
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			closeAll();
+		}
+		System.out.println("in set_params: " + user.getId());
+	}
+
+	@Override
+	public Statistics findStatistics(Long id) throws SQLException {
+		Statistics targetStatistics;
+		try{
+			startConnection();
+			ResultSet rs = st.executeQuery("select * from statistics where id = "+ id +";");
+			Statistics statistics = new Statistics();
+			while (rs.next()) {
+				statistics.setId(rs.getLong("id"));
+				statistics.setWeight(rs.getString("weight"));
+				statistics.setDate(rs.getString("date"));
+				statistics.setPhoto(rs.getString("photo"));
+				statistics.setPhotoName(rs.getString("photo_name"));
+			}
+			targetStatistics = statistics;
+		}finally {
+			closeAll();
+		}
+
+		return targetStatistics;
+	}
+
+	@Override
+	public Statistics editStatistics(Statistics statistics) throws SQLException {
+		try{
+			startConnection();
+
+			if (statistics.getPhoto().equals("")) {
+
+				String query = "UPDATE statistics SET date = '" + statistics.getDate() + "', weight = '" + statistics.getWeight() +
+						"', photo='"+statistics.getPhoto()+"', photo_name='"+statistics.getPhoto()+"' WHERE id = " + statistics.getId() + ";";
+				st.executeUpdate(query);
+			} else {
+				String encodedString = "";
+
+				// Впишите свой путь каталога, где хранятся фотки
+				File file = new File("/Users/Ksusha/Desktop/вынос мозга/шшш/смайл"+statistics.getPhoto());
+				FileInputStream imageInFile = new FileInputStream(file);
+				byte imageData[] = new byte[(int) file.length()];
+				imageInFile.read(imageData);
+				encodedString = Base64.getEncoder().encodeToString(imageData);
+
+				String query = "UPDATE statistics SET date = '" + statistics.getDate() + "', weight = '" + statistics.getWeight() +
+						"', photo='"+encodedString+"', photo_name='"+statistics.getPhoto()+"' WHERE id = " + statistics.getId() + ";";
+				st.executeUpdate(query);
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			closeAll();
+		}
+		return statistics;
+	}
+
+	@Override
+	public Statistics findStatisticsByDate(Long id, String date) throws SQLException {
+		Statistics targetStatistics;
+		try{
+			startConnection();
+			ResultSet rs = st.executeQuery("select * from statistics where id = '"+ id +"' and date='"+date+"';");
+			Statistics statistics = new Statistics();
+			while (rs.next()) {
+				statistics.setId(rs.getLong("id"));
+				statistics.setWeight(rs.getString("weight"));
+				statistics.setDate(rs.getString("date"));
+				statistics.setPhoto(rs.getString("photo"));
+			}
+			targetStatistics = statistics;
+		}finally {
+			closeAll();
+		}
+
+		return targetStatistics;
+	}
+
+	@Override
+	public PhotoDays findPhotoDay(User user) throws SQLException {
+		PhotoDays pd = new PhotoDays();
+		ArrayList<Statistics> statistics = findAll(user);
+		LinkedHashMap<String, String> photoDays = new LinkedHashMap<>();
+		for (Statistics statistic: statistics) {
+			if (!statistic.getPhoto().equals("")) {
+				photoDays.put(statistic.getDate(), statistic.getPhoto());
+			}
+		}
+
+		if (photoDays.isEmpty()){
+			LocalDate date = LocalDate.now();
+			pd.setDate1(String.valueOf(date));
+			pd.setDate2(String.valueOf(date));
+			pd.setPhoto1(null);
+			pd.setPhoto2(null);
+			return pd;
+		}
+		pd.setDate1((String) photoDays.keySet().toArray()[0]);
+		pd.setDate2((String) photoDays.keySet().toArray()[photoDays.keySet().size()-1]);
+		pd.setPhoto1(photoDays.get(pd.getDate1()));
+		pd.setPhoto2(photoDays.get(pd.getDate2()));
+		return pd;
+	}
+
+	@Override
+	public PhotoDays findPhoto(PhotoDays photoDays, User user) throws SQLException {
+		PhotoDays pd = new PhotoDays();
+		try{
+			startConnection();
+			ResultSet rs = st.executeQuery("select photo from statistics where date='"+ photoDays.getDate1() + "' and user_id = '" + user.getId()+"';");
+
+			while (rs.next()) {
+				pd.setPhoto1(rs.getString("photo"));
+			}
+
+
+			rs = st.executeQuery("select photo from statistics where date='"+ photoDays.getDate2() + "' and user_id ='" + user.getId()+"';");
+			while (rs.next()) {
+				pd.setPhoto2(rs.getString("photo"));
+			}
+
+			pd.setDate1(photoDays.getDate1());
+			pd.setDate2(photoDays.getDate2());
+		}finally {
+			closeAll();
+		}
+		return pd;
+	}
+
+	@Override
+	public ArrayList<Object[]> dynamics(User user) throws SQLException {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		ArrayList<Object[]> hM = new ArrayList<>();
+		Object[] names = new Object[2];
+		names[0] = "Дата";
+		names[1] = "Вес";
+		hM.add(names);
+		try{
+			startConnection();
+			ResultSet rs = st.executeQuery("select * from statistics where user_id = "+ user.getId() +" order by date asc;");
+			while (rs.next()) {
+
+				Object[] point = new Object[2];
+				point[0] = rs.getString("date").substring(5, rs.getString("date").length());
+				point[1] = rs.getFloat("weight");
+				hM.add(point);
+			}
+		}finally {
+			closeAll();
+		}
+
+		return hM;
+
+	}
 }

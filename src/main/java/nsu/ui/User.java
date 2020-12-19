@@ -2,13 +2,16 @@ package nsu.ui;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.Pattern;
+
 public class User {
+
     private Long id;
 
-    @NotEmpty(message = "Email обязателен для заполнения.")
+    private static User instance;
+
     private String email;
 
-    @NotEmpty(message = "Пароль обязателен для заполнения.")
     private String password;
 
     private String name;
@@ -16,6 +19,15 @@ public class User {
     private String age;
 
     private String height;
+
+    public static synchronized User getInstance() {
+        if (instance == null) {
+            System.out.println("instance = 0");
+            instance = new User();
+        }
+        System.out.println(instance.getId());
+        return instance;
+    }
 
     public Long getId() {
         return this.id;
@@ -63,6 +75,14 @@ public class User {
 
     public void setHeight(String height) {
         this.height = height;
+    }
+
+    public void setInstance(User user) {
+        instance = user;
+    }
+
+    public String toString(){
+        return id+ " " +name+ " " +email+ " " +password+ " " +age+ " " +height;
     }
 
 

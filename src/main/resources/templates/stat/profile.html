@@ -27,6 +27,13 @@
             <div class = "inputs" style="display: table">
 
                 <div style="display: table-row">
+                    <input id = "id" type="hidden" style="display: table-row"
+                           value="${user.id}"
+                           th:field="*{id}"
+                           th:class="${#fields.hasErrors('id')} ? 'field-error'"/>
+                </div>
+
+                <div style="display: table-row">
                     <label for="email">EMAIL: </label>
                     <input id = "email" type="email" style="display: table-row" readonly="readonly"
                            value="${user.email}"
@@ -37,13 +44,14 @@
                 <div style="display: table-row">
                     <label for="name">ИМЯ: </label>
                     <input id = "name" type="text" style="display: table-row"
+                           value="${user.name}"
                            th:field="*{name}"
                            th:class="${#fields.hasErrors('name')} ? 'field-error'"/>
                 </div>
 
                 <div style="display: table-row">
                     <label for="password">ПАРОЛЬ: </label>
-                    <input id = "password" type="password" style="display: table-row"
+                    <input id = "password" type="text" style="display: table-row" required="required"
                            value = "${user.password}"
                            th:field="*{password}"
                            th:class="${#fields.hasErrors('password')} ? 'field-error'"/>
@@ -51,7 +59,7 @@
 
                 <div style="display: table-row">
                     <label for="age">ВОЗРАСТ: </label>
-                    <input id = "age" type="text" style="display: table-row"
+                    <input id = "age" type="number" min="0" max="150" style="display: table-row"
                            th:field="*{age}"
                            th:class="${#fields.hasErrors('age')} ? 'field-error'"/>
                     <label for="age">лет</label>
@@ -59,16 +67,36 @@
 
                 <div style="display: table-row">
                     <label for="height">РОСТ: </label>
-                    <input id = "height" type="text" style="display: table-row"
+                    <input id = "height" type="number" min="0" max="250" style="display: table-row"
                            th:field="*{height}"
                            th:class="${#fields.hasErrors('height')} ? 'field-error'"/>
                     <label for="height">см</label>
                 </div>
             </div>
 
+            <script>
+                var firstName=document.getElementById("name").value;
+                if (firstName!=="") {
+                localStorage.setItem("nameValue", firstName);
+                }
+            </script>
+
+
+            <script>
+                function passValues()
+                {
+                    var firstName=document.getElementById("name").value;
+                    localStorage.setItem("nameValue", firstName);
+                    return false;
+                }
+            </script>
+            <form action="layout.html">
+
             <div class="form-actions" id="profile-button">
-                <input type="submit" value="СОХРАНИТЬ"/>
+                <input type="submit" value="СОХРАНИТЬ" onclick="passValues();"/>
+
             </div>
+            </form>
         </div>
     </form>
 </div>

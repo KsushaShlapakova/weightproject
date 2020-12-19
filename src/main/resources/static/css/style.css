@@ -125,14 +125,6 @@ label {
     color: green;
 }
 
-.alert-danger, .alert-error {
-    color: #b94a48;
-    background-color: #f2dede;
-    border-color: #eed3d7;
-    width: 90%;
-    text-align: left;
-}
-
 .header-login {
     position: relative;
     top:0;
@@ -208,4 +200,22 @@ position: absolute;
     width: 50px;
 }
 
+.alert-danger, .alert-error {
+    color: #b94a48;
+    background-color: #f2dede;
+    border-color: #eed3d7;
+    text-align: left;
+    width: 90%;
+}
+
+select, input[type="file"] {
+    height: 28px;
+    *margin-top: 4px;
+    line-height: 28px;
+    left: 37%;
+    background: white;
+}
+.photo-input-button {
+    left: 37%;
+}
 

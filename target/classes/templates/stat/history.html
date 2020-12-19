@@ -21,11 +21,18 @@
             <td width="60%">ДАТА</td>
             <td width="20%">ВЕС</td>
             <td width="20%">ДЕЛЬТА</td>
+            <td width="20%">ФОТО</td>
+<!--            <td width="60%">КАРТИНКА</td>-->
+            <td width="20%"></td>
           </tr>
         </thead>
         <tbody>
           <tr th:each="statistic : ${statistics}">
-            <td th:text="${statistic.date}">1</td>
+            <td><a href="edit.html"
+                   th:href="@{'/edit/' + ${statistic.id}}"
+                   th:text="${statistic.date}">
+              Date
+            </a></td>
             <td th:text="${statistic.weight}+ ' кг'">
               Weight
             </td>
@@ -33,6 +40,15 @@
                 th:text="${statistic.delta + ' кг'}">
               Delta
             </td>
+            <td>
+              <text th:if="${statistic.photo}==''" th:text="нет">нет</text>
+              <text th:unless="${statistic.photo}==''" th:text="есть">есть</text>
+            </td>
+<!--            <td>-->
+<!--              <img th:src="'data:image/jpeg;base64,'+${statistic.photo}" id="image" style="width:230px;height:250px;" alt="photo"/>-->
+<!--            </td>-->
+
+            <td><a th:href="@{'/delete/' + ${statistic.id}}" th:text="Удалить" onclick="return confirm('Вы уверены, что хотите удалить запись?');">Удалить</a></td>
           </tr>
         </tbody>
       </table>

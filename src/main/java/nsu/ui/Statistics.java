@@ -13,6 +13,7 @@
 
 package nsu.ui;
 
+import java.sql.Blob;
 import java.util.Calendar;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -35,7 +36,10 @@ public class Statistics {
     @Pattern(regexp = "^[+]?([0-9]*[.,])?[0-9]+$", message = "Данные введены некорректно.")
 	private String weight;
 
-	private Calendar created = Calendar.getInstance();
+//	private boolean photo = false;
+	private String photo;
+
+	private String photoName;
 
 	public Long getId() {
 		return this.id;
@@ -43,14 +47,6 @@ public class Statistics {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Calendar getCreated() {
-		return this.created;
-	}
-
-	public void setCreated(Calendar created) {
-		this.created = created;
 	}
 
 	public String getWeight() {
@@ -75,5 +71,21 @@ public class Statistics {
 
 	public void setDelta(String delta) {
 		this.delta = delta;
+	}
+
+	public String getPhoto() {
+		return this.photo;
+	}
+
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
+
+	public String getPhotoName() {
+		return photoName;
+	}
+
+	public void setPhotoName(String photoName) {
+		this.photoName = photoName;
 	}
 }

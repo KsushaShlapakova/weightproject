@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+<head>
+    <title>PHOTOPROGRESS</title>
+    <link rel="stylesheet"
+          th:href="@{/css/bootstrap.min.css}"
+          href="../../static/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href = "/css/style.css"/>
+</head>
+<body>
+<div layout:fragment="content" class="container">
+    <h1 layout:fragment="header">ФОТОПРОГРЕСС</h1>
+    <form id="statisticsCreate"
+          th:action="@{/progress}"
+          th:object="${photoDays}"
+          action="#"
+          method="post">
+        <div th:if="${#fields.hasErrors('*')}"
+             class="alert alert-error">
+            <p th:each="error : ${#fields.errors('*')}"
+               th:text="${error}">
+                Validation error
+            </p>
+        </div>
+    <table style="border: 0px">
+        <thead>
+        <tr>
+            <td width="50%"></td>
+            <td width="50%"></td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <table>
+                    <td>
+                        <input type="date" name="calendar" class="input-data" id="date1"
+                               value="${photoDays.date1}"
+                               th:field="*{date1}"/>
+                    </td>
+                    <td>
+                        <div class="form-actions" id="f" style="display: table-row">
+                            <input type="submit" value="ОК" onclick="showImage()"/>
+                        </div>
+                    </td>
+
+                </table>
+            </td>
+            <td>
+                <input type="date" name="calendar" class="input-data" id="date2"
+                       value="${photoDays.date2}"
+                       th:field="*{date2}"/>
+            </td>
+            <td>
+                <div class="form-actions" style="display: table-row">
+                    <input type="submit" value="ОК"/>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <table style="text-align: center">
+                <td height="250px" width="230px" style="border: 2px solid">
+<!--                    <text style="text-align: center">Фото не загружено</text>-->
+<!--                    <img th:if="${photoDays.photo1==null}" id="no-image" style="width:230px;height:250px;"/>-->
+                    <span th:if="${photoDays.photo1==null || photoDays.photo1==''}">Фото не загружено</span>
+                    <img th:unless="${photoDays.photo1==null || photoDays.photo1==''}" th:src="'data:image/jpeg;base64,'+${photoDays.photo1}" id="image" style="width:230px;height:250px;" alt="photo"/>
+                </td>
+                <td width="100px">
+                </td>
+                <td height="250px" style="border: 2px solid" width="230px">
+<!--                    <text style="text-align: center">Фото не загружено</text>-->
+<!--                    <img th:if="${photoDays.photo2==null}" id="no-image2" style="width:230px;height:250px;"/>-->
+                    <span th:if="${photoDays.photo2==null || photoDays.photo2==''}">Фото не загружено</span>
+                    <img th:unless="${photoDays.photo2==null || photoDays.photo2==''}" th:src="'data:image/jpeg;base64,'+${photoDays.photo2}" id="image2" style="width:230px;height:250px;" alt="photo"/>
+                </td>
+            </table>
+        </tr>
+
+        </tbody>
+    </table>
+    </form>
+    <script>
+            document.getElementById('date1').max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+            document.getElementById('date2').max = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().split("T")[0];
+    </script>
+</div>
+</body>
+</html>

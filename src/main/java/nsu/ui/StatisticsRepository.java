@@ -15,14 +15,33 @@ package nsu.ui;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public interface StatisticsRepository {
 
 
-	ArrayList<Statistics> findAll() throws SQLException;
+	ArrayList<Statistics> findAll(User user) throws SQLException;
 
-	Statistics save(Statistics message) throws SQLException;
+	Statistics save(Statistics message, long user_id) throws SQLException;
 
-	Statistics findStatistics(Long id);
+	Statistics findStatistics(Long id) throws SQLException;
 
+	void delete(Long id) throws SQLException;
+
+	boolean[] check_user(String email, String password) throws SQLException;
+
+	User create_user(User user) throws SQLException;
+
+	void user_set_params(User user) throws SQLException;
+
+	Statistics editStatistics(Statistics statistics) throws SQLException;
+
+	Statistics findStatisticsByDate(Long id, String date) throws SQLException;
+
+	PhotoDays findPhotoDay(User user) throws SQLException;
+
+	PhotoDays findPhoto(PhotoDays photoDays, User user) throws SQLException;
+
+	ArrayList<Object[]> dynamics(User user) throws SQLException;
 }
