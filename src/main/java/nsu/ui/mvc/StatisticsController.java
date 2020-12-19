@@ -27,7 +27,10 @@ import nsu.ui.PhotoDays;
 import nsu.ui.Statistics;
 import nsu.ui.StatisticsRepository;
 
+import java.sql.Array;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 /**
  * @author Rob Winch
@@ -65,6 +68,21 @@ public class StatisticsController {
 //	public String profile(@ModelAttribute User user) {
 //		return "stat/profile";
 //	}
+
+	@RequestMapping("statistics")
+	public ModelAndView statistics(@ModelAttribute Statistics statistics) throws SQLException {
+		User user1 = User.getInstance();
+		if (user1.getId() == null) {
+			return new ModelAndView("redirect:/statistics");
+		}
+		ArrayList<Object[]> dateWeight = this.statisticsRepository.dynamics(user1);
+		Object[] point = new Object[1];
+		point[0]=1;
+		dateWeight.add(point);
+
+
+		return new ModelAndView("stat/statistics", "chartData", dateWeight);
+	}
 
 	@RequestMapping("profile")
 	public ModelAndView profile() {

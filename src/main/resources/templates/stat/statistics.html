@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+<head>
+    <title>STATISTICS</title>
+    <link rel="stylesheet"
+          th:href="@{/css/bootstrap.min.css}"
+          href="../../static/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href = "/css/style.css"/>
+</head>
+<body>
+<div layout:fragment="content" class="container">
+    <h1 layout:fragment="header" style="margin-bottom: 1%;">СТАТИСТИКА</h1>
+        <table style="border: 0px">
+            <thead>
+            <tr>
+                <td width="50%"></td>
+                <td width="50%"></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <table>
+                        <td>
+                            <div class="form-actions" id="f">
+                                <input type="submit" value="Неделя" onclick="showImage()"/>
+                            </div>
+                        </td>
+
+                    </table>
+                </td>
+                <td>
+                    <div class="form-actions" style="background-color: #fff0; border-top: 0px;">
+                        <input type="submit" value="Месяц" style="background: #DCDCDC;"/>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" th:inline="javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var d = [[${chartData.subList(0, chartData.size()-1)}]];
+        console.log(d);
+        var data = google.visualization.arrayToDataTable(d);
+
+        var options = {
+          curveType: 'function',
+          legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+        <div id="curve_chart" style="width: 400px; height: 200px; position:relative; left:30%;"></div>
+        <div>
+            <text>Динамика за последние 7 дней:</text><br></br>
+            <text>Динамика за последние 30 дней:</text><br></br>
+            <text>Категория:</text><br></br>
+            <text>ИМТ:</text>
+        </div>
+</div>
+</body>
+</html>

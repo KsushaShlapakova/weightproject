@@ -32,7 +32,7 @@ public class BDRepository implements StatisticsRepository {
 
 	public static final String url = "jdbc:mysql://localhost:3306/weightdetector?useSSL=false";
 	public static final String user = "root";
-	public static final String pwd = "root1965";
+	public static final String pwd = "";
 
 
 	public void startConnection(){
@@ -112,7 +112,7 @@ public class BDRepository implements StatisticsRepository {
 
 			if (respond == null) {
 				// прописать если getPhoto=""
-				if (stat.getPhoto().equals("")){
+				if (stat.getPhoto() == null){
 					String queryStudent = "insert into statistics (user_id, date, weight, photo)" +
 							" values(?,?,?,?)";
 					PreparedStatement ps = con.prepareStatement(queryStudent);
@@ -173,7 +173,7 @@ public class BDRepository implements StatisticsRepository {
 					String encodedString = "";
 
 					// Впишите свой путь каталога, где хранятся фотки
-					File file = new File("/Users/sarantuaa/Downloads/wallpaper/"+stat.getPhoto());
+					File file = new File("C:/Users/Ksusha/Desktop/вынос мозга/шшш/смайл"+stat.getPhoto());
 					FileInputStream imageInFile = new FileInputStream(file);
 					byte imageData[] = new byte[(int) file.length()];
 					imageInFile.read(imageData);
@@ -342,7 +342,7 @@ public class BDRepository implements StatisticsRepository {
 				String encodedString = "";
 
 				// Впишите свой путь каталога, где хранятся фотки
-				File file = new File("/Users/sarantuaa/Downloads/wallpaper/"+statistics.getPhoto());
+				File file = new File("/Users/Ksusha/Desktop/вынос мозга/шшш/смайл"+statistics.getPhoto());
 				FileInputStream imageInFile = new FileInputStream(file);
 				byte imageData[] = new byte[(int) file.length()];
 				imageInFile.read(imageData);
@@ -433,5 +433,31 @@ public class BDRepository implements StatisticsRepository {
 			closeAll();
 		}
 		return pd;
+	}
+
+	@Override
+	public ArrayList<Object[]> dynamics(User user) throws SQLException {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		ArrayList<Object[]> hM = new ArrayList<>();
+		Object[] names = new Object[2];
+		names[0] = "Дата";
+		names[1] = "Вес";
+		hM.add(names);
+		try{
+			startConnection();
+			ResultSet rs = st.executeQuery("select * from statistics where user_id = "+ user.getId() +" order by date asc;");
+			while (rs.next()) {
+
+				Object[] point = new Object[2];
+				point[0] = rs.getString("date").substring(5, rs.getString("date").length());
+				point[1] = rs.getFloat("weight");
+				hM.add(point);
+			}
+		}finally {
+			closeAll();
+		}
+
+		return hM;
+
 	}
 }
