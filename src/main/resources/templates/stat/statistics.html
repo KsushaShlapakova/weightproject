@@ -45,7 +45,7 @@
       google.charts.setOnLoadCallback(drawChart);
 
       function drawChart() {
-        var d = [[${chartData.subList(0, chartData.size()-1)}]];
+        var d = [[${chartData.subList(0, chartData.size()-2)}]];
         console.log(d);
         var data = google.visualization.arrayToDataTable(d);
 
@@ -61,10 +61,10 @@
     </script>
         <div id="curve_chart" style="width: 400px; height: 200px; position:relative; left:30%;"></div>
         <div>
-            <text>Динамика за последние 7 дней:</text><br></br>
-            <text>Динамика за последние 30 дней:</text><br></br>
-            <text>Категория:</text><br></br>
-            <text>ИМТ:</text>
+            <text th:text="'Динамика за последние 7 дней: ' + ${chartData.toArray()[chartData.size()-2][1]}">Динамика за последние 7 дней:</text><br></br>
+            <text th:text="'Динамика за последние 30 дней: ' + ${chartData.toArray()[chartData.size()-2][2]}">Динамика за последние 30 дней:</text><br></br>
+            <text th:text="'Категория: ' + ${chartData.toArray()[chartData.size()-2][3]}">Категория:</text><br></br>
+            <text th:text="'ИМТ: ' + ${chartData.toArray()[chartData.size()-2][0]}">ИМТ:</text>
         </div>
 </div>
 </body>

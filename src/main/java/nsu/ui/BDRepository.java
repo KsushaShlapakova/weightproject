@@ -437,7 +437,6 @@ public class BDRepository implements StatisticsRepository {
 
 	@Override
 	public ArrayList<Object[]> dynamics(User user) throws SQLException {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		ArrayList<Object[]> hM = new ArrayList<>();
 		Object[] names = new Object[2];
 		names[0] = "Дата";
@@ -447,7 +446,6 @@ public class BDRepository implements StatisticsRepository {
 			startConnection();
 			ResultSet rs = st.executeQuery("select * from statistics where user_id = "+ user.getId() +" order by date asc;");
 			while (rs.next()) {
-
 				Object[] point = new Object[2];
 				point[0] = rs.getString("date").substring(5, rs.getString("date").length());
 				point[1] = rs.getFloat("weight");
@@ -457,7 +455,66 @@ public class BDRepository implements StatisticsRepository {
 			closeAll();
 		}
 
+		if (hM.size() > 1){
+			Object[] weightFirst = (Object[]) hM.toArray()[1];
+			Object[] weightLast = (Object[]) hM.toArray()[hM.size()-1];
+
+			Float imt = IMT((Float) weightLast[1], Float.parseFloat(user.getHeight()));
+
+			Float sevenDays = null;
+			Float thirtyDays = null;
+
+			if (hM.size() <= 7) {
+				sevenDays = (Float) weightLast[1] - (Float) weightFirst[1];
+				thirtyDays = (Float) weightLast[1] - (Float) weightFirst[1];
+			}else if (hM.size() > 7 || hM.size() < 31){
+				Object[] weightSeven = (Object[]) hM.toArray()[hM.size()-8];
+				sevenDays = (Float) weightLast[1] - (Float) weightSeven[1];
+				thirtyDays = (Float) weightLast[1] - (Float) weightFirst[1];
+			}else if (hM.size() >= 31){
+				Object[] weightSeven = (Object[]) hM.toArray()[hM.size()-8];
+				Object[] weightThirty = (Object[]) hM.toArray()[hM.size()-31];
+				sevenDays = (Float) weightLast[1] - (Float) weightSeven[1];
+				thirtyDays = (Float) weightLast[1] - (Float) weightThirty[1];
+			}
+			Object[] results = new Object[4];
+			results[0] = imt;
+			results[1] = sevenDays;
+			results[2] = thirtyDays;
+			results[3] = category(imt);
+
+			hM.add(results);
+
+
+		}
+
 		return hM;
 
+	}
+
+	public Float IMT(Float weight, Float height){
+		String result = String.format("%.3f", weight/((height/100)*(height/100)));
+		return Float.parseFloat(result.replace(",", "."));
+
+	}
+
+	public String category(Float imt){
+		String result = null;
+		if (imt <= 16){
+			result = "выраженный дефицит массы тела";
+		}else if (imt > 16 || imt <= 18.5){
+			result = "недостаточная масса тела";
+		}else if (imt > 18.5 || imt <= 25){
+			result = "нормальный вес";
+		}else if (imt > 25 || imt <= 30){
+			result = "избыточная масса тела";
+		}else if (imt > 30 || imt <= 35){
+			result = "ожирение певрой степени";
+		}else if (imt > 35 || imt <= 40){
+			result = "ожирение второй степени";
+		}else if (imt > 40){
+			result = "ожирение третьей степени";
+		}
+		return result;
 	}
 }
