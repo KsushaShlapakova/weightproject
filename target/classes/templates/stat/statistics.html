@@ -12,6 +12,10 @@
 <body>
 <div layout:fragment="content" class="container">
     <h1 layout:fragment="header" style="margin-bottom: 1%;">СТАТИСТИКА</h1>
+    <text th:if="${chartData.size() == 1}" id="no-data">
+        Данных пока нет в системе
+    </text>
+    <div th:unless="${chartData.size() == 1}">
         <table style="border: 0px">
             <thead>
             <tr>
@@ -61,11 +65,16 @@
     </script>
         <div id="curve_chart" style="width: 400px; height: 200px; position:relative; left:30%;"></div>
         <div>
-            <text th:text="'Динамика за последние 7 дней: ' + ${chartData.toArray()[chartData.size()-2][1]}">Динамика за последние 7 дней:</text><br></br>
-            <text th:text="'Динамика за последние 30 дней: ' + ${chartData.toArray()[chartData.size()-2][2]}">Динамика за последние 30 дней:</text><br></br>
-            <text th:text="'Категория: ' + ${chartData.toArray()[chartData.size()-2][3]}">Категория:</text><br></br>
-            <text th:text="'ИМТ: ' + ${chartData.toArray()[chartData.size()-2][0]}">ИМТ:</text>
+            <div style="margin:3%">
+                <text th:classappend="'Динамика за последние 7 дней: ' + ${(chartData.toArray()[chartData.size()-1][0][0] == '+' ? 'positive' : '') + (chartData.toArray()[chartData.size()-1][0][0] == '-' ? 'negative' : '')}">Динамика за последние 7 дней:</text><br></br>
+                <text th:classappend="'Динамика за последние 30 дней: ' + ${(chartData.toArray()[chartData.size()-1][1][0] == '+' ? 'positive' : '') + (chartData.toArray()[chartData.size()-1][1][0] == '-' ? 'negative' : '')}">Динамика за последние 30 дней:</text><br></br>
+
+                <text th:if="${chartData.toArray()[chartData.size()-1][2] != null}" th:text="'Категория: ' + ${chartData.toArray()[chartData.size()-1][2]}">Категория:</text><br></br>
+                <text th:if="${chartData.toArray()[chartData.size()-1][3] != null}" th:text="'ИМТ: ' + ${chartData.toArray()[chartData.size()-1][3]}">ИМТ:</text>
+                <text th:if="${chartData.toArray()[chartData.size()-1][3] == null}">ИМТ: введите рост, для подсчета показателя</text>
         </div>
+    </div>
+    </div>
 </div>
 </body>
 </html>

@@ -43,7 +43,9 @@
 
     </div>
     <div class="photo-input">
-      <input id = "photo" type="file" value="${statistics.photoName}" accept="image/*,image/jpeg" style="display: table-row"/>
+      <input id = "photo" type="file" value="${statistics.photoName}" accept="image/*,image/jpeg" style="display: table-row"
+             th:field="*{photo}"
+             th:class="${#fields.hasErrors('weight')} ? 'field-error'"/>
     </div>
     <div id="file-upload-name">Фото не загружено</div>
     <script>
