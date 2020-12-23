@@ -76,10 +76,6 @@ public class StatisticsController {
 			return new ModelAndView("redirect:/statistics");
 		}
 		ArrayList<Object[]> dateWeight = this.statisticsRepository.dynamics(user1);
-		Object[] point = new Object[1];
-		point[0]=1;
-		dateWeight.add(point);
-
 
 		return new ModelAndView("stat/statistics", "chartData", dateWeight);
 	}

@@ -136,7 +136,7 @@ public class BDRepository implements StatisticsRepository {
 					String encodedString = "";
 
 					// Впишите свой путь каталога, где хранятся фотки
-					File file = new File("/Users/sarantuaa/Downloads/wallpaper/"+stat.getPhoto());
+					File file = new File("C:/Users/Ksusha/Desktop/вынос мозга/шшш/смайл"+stat.getPhoto());
 					FileInputStream imageInFile = new FileInputStream(file);
 					byte imageData[] = new byte[(int) file.length()];
 					imageInFile.read(imageData);
@@ -459,7 +459,10 @@ public class BDRepository implements StatisticsRepository {
 			Object[] weightFirst = (Object[]) hM.toArray()[1];
 			Object[] weightLast = (Object[]) hM.toArray()[hM.size()-1];
 
-			Float imt = IMT((Float) weightLast[1], Float.parseFloat(user.getHeight()));
+			Float imt = null;
+			if (user.getHeight() != null){
+				imt = IMT((Float) weightLast[1], Float.parseFloat(user.getHeight()));
+			}
 
 			Float sevenDays = null;
 			Float thirtyDays = null;
@@ -478,10 +481,23 @@ public class BDRepository implements StatisticsRepository {
 				thirtyDays = (Float) weightLast[1] - (Float) weightThirty[1];
 			}
 			Object[] results = new Object[4];
-			results[0] = imt;
-			results[1] = sevenDays;
-			results[2] = thirtyDays;
-			results[3] = category(imt);
+			if (sevenDays > 0) {
+				results[0] = "+ " + sevenDays;
+			}else {
+				results[0] = ""+sevenDays;
+			}
+			if (thirtyDays > 0) {
+				results[1] = "+ " + thirtyDays;
+			}else {
+				results[1] = ""+thirtyDays;
+			}
+
+			if (imt != null) {
+				results[2] = ""+category(imt);
+			}else{
+				results[2] = null;
+			}
+			results[3] = imt;
 
 			hM.add(results);
 
@@ -501,7 +517,7 @@ public class BDRepository implements StatisticsRepository {
 	public String category(Float imt){
 		String result = null;
 		if (imt <= 16){
-			result = "выраженный дефицит массы тела";
+			result = "выраженный дефицит массы";
 		}else if (imt > 16 || imt <= 18.5){
 			result = "недостаточная масса тела";
 		}else if (imt > 18.5 || imt <= 25){
