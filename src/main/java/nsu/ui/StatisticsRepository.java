@@ -43,5 +43,5 @@ public interface StatisticsRepository {
 
 	PhotoDays findPhoto(PhotoDays photoDays, User user) throws SQLException;
 
-	ArrayList<Object[]> dynamics(User user) throws SQLException;
+	CharData dynamics(User user) throws SQLException;
 }

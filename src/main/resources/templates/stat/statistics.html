@@ -12,10 +12,10 @@
 <body>
 <div layout:fragment="content" class="container">
     <h1 layout:fragment="header" style="margin-bottom: 1%;">СТАТИСТИКА</h1>
-    <text th:if="${chartData.size() == 1}" id="no-data">
+    <text th:if="${chartData.dynamicsThirty == null}" id="no-data">
         Данных пока нет в системе
     </text>
-    <div th:unless="${chartData.size() == 1}">
+    <div th:unless="${chartData.dynamicsThirty == null}">
         <table style="border: 0px">
             <thead>
             <tr>
@@ -29,7 +29,7 @@
                     <table>
                         <td>
                             <div class="form-actions" id="f">
-                                <input type="submit" value="Неделя" onclick="showImage()"/>
+                                <input type="submit" value="Неделя" onclick="showSeven()"/>
                             </div>
                         </td>
 
@@ -37,41 +37,107 @@
                 </td>
                 <td>
                     <div class="form-actions" style="background-color: #fff0; border-top: 0px;">
-                        <input type="submit" value="Месяц" style="background: #DCDCDC;"/>
+                        <input type="submit" value="Месяц" style="background: #DCDCDC;" onclick="showThirty()"/>
                     </div>
                 </td>
             </tr>
             </tbody>
         </table>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript" th:inline="javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
+<!--        var d = [[${chartData.subList(0, chartData.size()-2)}]];-->
 
-      function drawChart() {
-        var d = [[${chartData.subList(0, chartData.size()-2)}]];
-        console.log(d);
-        var data = google.visualization.arrayToDataTable(d);
-
-        var options = {
-          curveType: 'function',
-          legend: { position: 'bottom' }
-        };
-
-        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-
-        chart.draw(data, options);
-      }
-    </script>
+        <text id="noSeven"></text>
         <div id="curve_chart" style="width: 400px; height: 200px; position:relative; left:30%;"></div>
             <div style="margin:3%">
-                <text th:classappend="'Динамика за последние 7 дней: ' + ${(chartData.toArray()[chartData.size()-1][0][0] == '+' ? 'positive' : '') + (chartData.toArray()[chartData.size()-1][0][0] == '-' ? 'negative' : '')}">Динамика за последние 7 дней:</text><br></br>
-                <text th:classappend="'Динамика за последние 30 дней: ' + ${(chartData.toArray()[chartData.size()-1][1][0] == '+' ? 'positive' : '') + (chartData.toArray()[chartData.size()-1][1][0] == '-' ? 'negative' : '')}">Динамика за последние 30 дней:</text><br></br>
+<!--                <text th:classappend="'Динамика за последние 7 дней: ' + ${(chartData.toArray()[chartData.size()-1][0] == '+' ? 'positive' : '') + (chartData.toArray()[chartData.size()-1][0][0] == '-' ? 'negative' : '')}">Динамика за последние 7 дней:</text><br></br>-->
+<!--                <text th:classappend="'Динамика за последние 30 дней: ' + ${(chartData.toArray()[chartData.size()-1][1] == '+' ? 'positive' : '') + (chartData.toArray()[chartData.size()-1][1][0] == '-' ? 'negative' : '')}">Динамика за последние 30 дней:</text><br></br>-->
+                <text  th:text="'Динамика за последние 7 дней: '"></text><text th:classappend="${(chartData.dynamicsSeven[0] == '+' ? 'positive' : '') + (chartData.dynamicsSeven[0] == '-' ? 'negative' : '')}" th:text="${chartData.dynamicsSeven}">Динамика за последние 7 дней:</text><br></br>
+                <text  th:text="'Динамика за последние 30 дней: '"></text><text th:classappend="${(chartData.dynamicsThirty[0] == '+' ? 'positive' : '') + (chartData.dynamicsThirty[0] == '-' ? 'negative' : '')}" th:text="${chartData.dynamicsThirty}">Динамика за последние 30 дней:</text><br></br>
 
-                <text th:if="${chartData.toArray()[chartData.size()-1][2] != null}" th:text="'Категория: ' + ${chartData.toArray()[chartData.size()-1][2]}">Категория:</text><br></br>
-                <text th:if="${chartData.toArray()[chartData.size()-1][3] != null}" th:text="'ИМТ: ' + ${chartData.toArray()[chartData.size()-1][3]}">ИМТ:</text>
-                <text th:if="${chartData.toArray()[chartData.size()-1][3] == null}">ИМТ: введите рост, для подсчета показателя</text>
+<!--                <text th:if="${chartData.toArray()[chartData.size()-1][2] != null}" th:text="'Категория: ' + ${chartData.toArray()[chartData.size()-1][2]}">Категория:</text><br></br>-->
+<!--                <text th:if="${chartData.toArray()[chartData.size()-1][3] != null}" th:text="'ИМТ: ' + ${chartData.toArray()[chartData.size()-1][3]}">ИМТ:</text>-->
+<!--                <text th:if="${chartData.toArray()[chartData.size()-1][3] == null}">ИМТ: введите рост, для подсчета показателя</text>-->
+                <text th:if="${chartData.category != null}" th:text="'Категория: ' + ${chartData.category}">Категория:</text><br></br>
+                <text th:if="${chartData.imt != null}" th:text="'ИМТ: '"></text><text th:classappend="${(chartData.category != 'нормальный вес'  ? 'positive' : '') + (chartData.category == 'нормальный вес'  ? 'negative' : '')}" th:if="${chartData.imt != null}" th:text="${chartData.imt}">ИМТ:</text>
+                <text th:if="${chartData.imt == null}">ИМТ: введите рост, для подсчета показателя</text>
     </div>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript" th:inline="javascript">
+
+        function showThirty() {
+            document.getElementById('noSeven').innerHTML = '';
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+            var d = [[${chartData.thirtyDays}]];
+            console.log(d);
+            var data = google.visualization.arrayToDataTable(d);
+
+            var options = {
+            curveType: 'function',
+            legend: { position: 'bottom' },
+            series: {
+            0: { color: 'green'} }
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+            chart.draw(data, options);
+            }
+            }
+        function showSeven() {
+            var val = [[${chartData.sevenDays}]];
+            if ([[${chartData.sevenDays.size()}]]==1) {
+            document.getElementById('noSeven').innerHTML = 'Нет данных за последние 7 дней. Данные за последние 30 дней:';
+            } else {
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+            var d = [[${chartData.sevenDays}]];
+            console.log(d);
+            var data = google.visualization.arrayToDataTable(d);
+
+            var options = {
+            curveType: 'function',
+            legend: { position: 'bottom' },
+            series: {
+            0: { color: 'green'} }
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+            chart.draw(data, options);
+            }
+            }
+            }
+        </script>
+        <script type="text/javascript" th:inline="javascript">
+            var val = [[${chartData.sevenDays}]];
+            if ([[${chartData.sevenDays.size()}]]==1) {
+            document.getElementById('noSeven').innerHTML = 'Нет данных за последние 7 дней.';
+            } else{
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+            var d = [[${chartData.sevenDays}]];
+            console.log(d);
+            var data = google.visualization.arrayToDataTable(d);
+
+            var options = {
+            curveType: 'function',
+            legend: { position: 'bottom' },
+            series: {
+            0: { color: 'green'} }
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+            chart.draw(data, options);
+            }
+            }
+        </script>
     </div>
 </div>
 </body>

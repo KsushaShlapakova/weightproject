@@ -15,17 +15,13 @@ package nsu.ui.mvc;
 
 import javax.validation.Valid;
 
-import nsu.ui.User;
+import nsu.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import nsu.ui.PhotoDays;
-import nsu.ui.Statistics;
-import nsu.ui.StatisticsRepository;
 
 import java.sql.Array;
 import java.sql.SQLException;
@@ -75,10 +71,13 @@ public class StatisticsController {
 		if (user1.getId() == null) {
 			return new ModelAndView("redirect:/statistics");
 		}
-		ArrayList<Object[]> dateWeight = this.statisticsRepository.dynamics(user1);
-		Object[] point = new Object[1];
-		point[0]=1;
-		dateWeight.add(point);
+//		ArrayList<Object[]> dateWeight = this.statisticsRepository.dynamics(user1);
+
+		CharData dateWeight = this.statisticsRepository.dynamics(user1);
+
+//		Object[] point = new Object[1];
+//		point[0]=1;
+//		dateWeight.add(point);
 
 
 		return new ModelAndView("stat/statistics", "chartData", dateWeight);

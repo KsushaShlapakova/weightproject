@@ -112,7 +112,7 @@ public class BDRepository implements StatisticsRepository {
 
 			if (respond == null) {
 				// прописать если getPhoto=""
-				if (stat.getPhoto() == null){
+				if (stat.getPhoto() == null || stat.getPhoto()==""){
 					String queryStudent = "insert into statistics (user_id, date, weight, photo)" +
 							" values(?,?,?,?)";
 					PreparedStatement ps = con.prepareStatement(queryStudent);
@@ -436,12 +436,18 @@ public class BDRepository implements StatisticsRepository {
 	}
 
 	@Override
-	public ArrayList<Object[]> dynamics(User user) throws SQLException {
+	public CharData dynamics(User user) throws SQLException {
+		CharData charData = new CharData();
+
 		ArrayList<Object[]> hM = new ArrayList<>();
+		ArrayList<Object[]> sevenDays = new ArrayList<>();
+		ArrayList<Object[]> thirtyDays = new ArrayList<>();
 		Object[] names = new Object[2];
 		names[0] = "Дата";
 		names[1] = "Вес";
 		hM.add(names);
+		sevenDays.add(names);
+		thirtyDays.add(names);
 		try{
 			startConnection();
 			ResultSet rs = st.executeQuery("select * from statistics where user_id = "+ user.getId() +" order by date asc;");
@@ -451,6 +457,22 @@ public class BDRepository implements StatisticsRepository {
 				point[1] = rs.getFloat("weight");
 				hM.add(point);
 			}
+			rs = st.executeQuery("select * from statistics where date >= (DATE(NOW()) - INTERVAL 7 DAY) and user_id ='"+user.getId()+"' order by date asc;");
+			while (rs.next()) {
+				Object[] point = new Object[2];
+				point[0] = rs.getString("date").substring(5, rs.getString("date").length());
+				point[1] = rs.getFloat("weight");
+				sevenDays.add(point);
+			}
+
+			rs = st.executeQuery("select * from statistics where date >= (CURDATE() - INTERVAL 1 MONTH ) and user_id ='"+user.getId()+"' order by date asc;");
+			while (rs.next()) {
+				Object[] point = new Object[2];
+				point[0] = rs.getString("date").substring(5, rs.getString("date").length());
+				point[1] = rs.getFloat("weight");
+				thirtyDays.add(point);
+			}
+
 		}finally {
 			closeAll();
 		}
@@ -461,50 +483,100 @@ public class BDRepository implements StatisticsRepository {
 
 			Float imt = null;
 			if (user.getHeight() != null){
-				imt = IMT((Float) weightLast[1], Float.parseFloat(user.getHeight()));
+				if (!(user.getHeight().equals(""))) {
+					imt = IMT((Float) weightLast[1], Float.parseFloat(user.getHeight()));
+					charData.setImt(imt);
+				}
 			}
 
-			Float sevenDays = null;
-			Float thirtyDays = null;
+			Float sevenDays1 = null;
+			Float thirtyDays2 = null;
 
-			if (hM.size() <= 7) {
-				sevenDays = (Float) weightLast[1] - (Float) weightFirst[1];
-				thirtyDays = (Float) weightLast[1] - (Float) weightFirst[1];
-			}else if (hM.size() > 7 || hM.size() < 31){
-				Object[] weightSeven = (Object[]) hM.toArray()[hM.size()-8];
-				sevenDays = (Float) weightLast[1] - (Float) weightSeven[1];
-				thirtyDays = (Float) weightLast[1] - (Float) weightFirst[1];
-			}else if (hM.size() >= 31){
-				Object[] weightSeven = (Object[]) hM.toArray()[hM.size()-8];
-				Object[] weightThirty = (Object[]) hM.toArray()[hM.size()-31];
-				sevenDays = (Float) weightLast[1] - (Float) weightSeven[1];
-				thirtyDays = (Float) weightLast[1] - (Float) weightThirty[1];
-			}
-			Object[] results = new Object[4];
-			if (sevenDays > 0) {
-				results[0] = "+ " + sevenDays;
-			}else {
-				results[0] = ""+sevenDays;
-			}
-			if (thirtyDays > 0) {
-				results[1] = "+ " + thirtyDays;
-			}else {
-				results[1] = ""+thirtyDays;
-			}
+//			if (hM.size() <= 7) {
+//				sevenDays1 = (Float) weightLast[1] - (Float) weightFirst[1];
+//				thirtyDays2 = (Float) weightLast[1] - (Float) weightFirst[1];
+//			}else if (hM.size() > 7 || hM.size() < 31){
+//				Object[] weightSeven = (Object[]) hM.toArray()[hM.size()-8];
+//				sevenDays1 = (Float) weightLast[1] - (Float) weightSeven[1];
+//				thirtyDays2 = (Float) weightLast[1] - (Float) weightFirst[1];
+//			}else if (hM.size() >= 31){
+//				Object[] weightSeven = (Object[]) hM.toArray()[hM.size()-8];
+//				Object[] weightThirty = (Object[]) hM.toArray()[hM.size()-31];
+//				sevenDays1 = (Float) weightLast[1] - (Float) weightSeven[1];
+//				thirtyDays2 = (Float) weightLast[1] - (Float) weightThirty[1];
+//			}
+//			Object[] results = new Object[4];
+//			if (sevenDays1 > 0) {
+//				results[0] = "+ " + sevenDays1;
+//				charData.setDynamicsSeven("+ " + sevenDays1);
+//
+//			}else {
+//				results[0] = ""+sevenDays1;
+//			}
+//			if (thirtyDays2 > 0) {
+//				results[1] = "+ " + thirtyDays2;
+//			}else {
+//				results[1] = ""+thirtyDays2;
+//			}
 
 			if (imt != null) {
-				results[2] = ""+category(imt);
-			}else{
-				results[2] = null;
+//				results[2] = ""+category(imt);
+				charData.setCategory(category(imt));
 			}
-			results[3] = imt;
+//				results[2] = null;
 
-			hM.add(results);
+//			results[3] = imt;
 
+//			hM.add(results);
 
 		}
 
-		return hM;
+		if (sevenDays.size()>1) {
+
+			Object[] weightFirst = (Object[]) sevenDays.toArray()[1];
+			Object[] weightLast = (Object[]) sevenDays.toArray()[sevenDays.size()-1];
+
+			Float sevenDays1 = null;
+
+			sevenDays1 = (Float) weightLast[1] - (Float) weightFirst[1];
+
+			if (sevenDays1>0) {
+				charData.setDynamicsSeven("+ " + Float.toString(sevenDays1));
+			} else {
+				charData.setDynamicsSeven(Float.toString(sevenDays1));
+			}
+
+
+		} else if (sevenDays.size() == 2){
+			charData.setDynamicsSeven("0.0");
+		} else if (sevenDays.size() == 1) {
+			charData.setDynamicsSeven("0.0");
+		}
+
+		if (thirtyDays.size()>1) {
+			Object[] weightFirst = (Object[]) thirtyDays.toArray()[1];
+			Object[] weightLast = (Object[]) thirtyDays.toArray()[thirtyDays.size()-1];
+
+			Float thirtyDays2 = null;
+
+			thirtyDays2 = (Float) weightLast[1] - (Float) weightFirst[1];
+			if (thirtyDays2>0) {
+				charData.setDynamicsThirty("+ " + Float.toString(thirtyDays2));
+			} else {
+				charData.setDynamicsThirty(Float.toString(thirtyDays2));
+			}
+		} else if (thirtyDays.size()==2) {
+			charData.setDynamicsThirty("0.0");
+		}
+//		else if (thirtyDays.size()==1) {
+//			charData.setDynamicsThirty("0.0");
+//		}
+
+		charData.setSevenDays(sevenDays);
+		charData.setThirtyDays(thirtyDays);
+		charData.sethM(hM);
+
+		return charData;
 
 	}
 
